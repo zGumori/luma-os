@@ -1,0 +1,3 @@
+# Sistema de archivos raíz por defecto al instalar Luma OS (bootc / bootc-image-builder)
+[install.filesystem.root]
+type = "btrfs"

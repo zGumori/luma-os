@@ -54,6 +54,7 @@ jobs:
             "${BIB_IMAGE}" \
             --type anaconda-iso \
             --use-librepo=True \
+            --rootfs btrfs \
             "${IMAGE_REF}"
           sudo chown -R "$(id -u):$(id -g)" output
           iso="$(find output -name '*.iso' | head -1)"
