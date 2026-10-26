@@ -1,34 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Solo formas y degradados (SVG Tiny): KDE dibuja los iconos con QtSvg, que no admite clipPath ni filtros -->
   <defs>
-    <!-- Orbe de cristal: degradado cian → índigo → violeta -->
-    <linearGradient id="orb" x1="0.15" y1="0.1" x2="0.85" y2="0.95">
-      <stop offset="0" stop-color="#5EEBFF"/>
-      <stop offset="0.5" stop-color="#6A6CFF"/>
-      <stop offset="1" stop-color="#C45CFF"/>
+    <!-- Squircle de cristal oscuro -->
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#232838"/>
+      <stop offset="1" stop-color="#0E1017"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0.35" cy="0.3" r="0.75">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
-      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.08"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    <!-- Brillo de acento que sube desde abajo (como las píldoras vivas) -->
+    <radialGradient id="glow" cx="128" cy="262" r="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5B8CFF" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#8B5CF6" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Halo suave detrás de la estrella -->
+    <radialGradient id="halo" cx="125" cy="134" r="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9DB8FF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#9DB8FF" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.9"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.15"/>
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#9DB8FF" stop-opacity="0.45"/>
     </linearGradient>
-    <linearGradient id="crescent" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#E6E8FF" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#E3EAFF"/>
     </linearGradient>
-    <mask id="moon">
-      <rect width="256" height="256" fill="black"/>
-      <circle cx="128" cy="128" r="62" fill="white"/>
-      <circle cx="154" cy="108" r="54" fill="black"/>
-    </mask>
   </defs>
-  <circle cx="128" cy="128" r="112" fill="url(#orb)"/>
-  <circle cx="128" cy="128" r="112" fill="url(#glow)"/>
-  <circle cx="128" cy="128" r="110.5" fill="none" stroke="url(#rim)" stroke-width="3"/>
-  <!-- Luna creciente: la "luz" de Luma -->
-  <rect width="256" height="256" fill="url(#crescent)" mask="url(#moon)"/>
-  <circle cx="176" cy="84" r="7" fill="#FFFFFF" opacity="0.95"/>
+  <rect x="8" y="8" width="240" height="240" rx="58" fill="url(#base)"/>
+  <rect x="8" y="8" width="240" height="240" rx="58" fill="url(#glow)"/>
+  <rect x="9" y="9" width="238" height="238" rx="57" fill="none" stroke="url(#rim)" stroke-width="2"/>
+  <circle cx="125" cy="134" r="78" fill="url(#halo)"/>
+  <!-- Estrella de Luma (logo-mark.svg escalado al 78 %) -->
+  <g transform="translate(128 128) scale(0.78) translate(-124 -136)" fill="url(#star)">
+    <path d="M120 40 Q129.5 126.5 188 136 Q129.5 145.5 120 232 Q110.5 145.5 52 136 Q110.5 126.5 120 40 Z"/>
+    <path d="M190 38 Q193.2 66.8 212 70 Q193.2 73.2 190 102 Q186.8 73.2 168 70 Q186.8 66.8 190 38 Z"/>
+  </g>
 </svg>

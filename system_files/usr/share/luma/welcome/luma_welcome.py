@@ -8,15 +8,18 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Property, QObject, QProcess, QUrl, Signal, Slot
-from PySide6.QtGui import QDesktopServices, QGuiApplication, QIcon
+from PySide6.QtCore import Property, QObject, QProcess, QRectF, Qt, QUrl, Signal, Slot
+from PySide6.QtGui import QDesktopServices, QFont, QFontDatabase, QGuiApplication, QIcon, QImage, QPainter
 from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQuick import QQuickImageProvider
 from PySide6.QtQuickControls2 import QQuickStyle
+from PySide6.QtSvg import QSvgRenderer
 
 HERE = Path(__file__).resolve().parent
 IMAGE_INFO = Path("/usr/share/ublue-os/image-info.json")
 GPU_CHECK = "/usr/libexec/luma/luma-gpu-check"
-LOGO = HERE.parent / "logo.svg"  # /usr/share/luma/logo.svg
+SHARE = HERE.parent  # /usr/share/luma
+FONTS = SHARE.parent / "fonts" / "luma"  # /usr/share/fonts/luma
 CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "luma"
 DONE_FILE = CONFIG_DIR / "welcome-done"
 
@@ -34,7 +37,8 @@ OPTIONAL_APPS = [
     ("com.visualstudio.code", "VS Code", "Editor de código", "#2F9BEF"),
 ]
 
-ACCENTS = ["#6A6CFF", "#3EC8F5", "#C45CFF", "#FF5C8A", "#2FD4A0", "#FFB547"]
+# Acentos de Luma Glass (docs/DESIGN.md)
+ACCENTS = ["#2F7BFF", "#14B8E6", "#8B5CF6", "#F0457A", "#F5A524", "#21C07A"]
 
 
 def run(cmd):
@@ -70,6 +74,27 @@ def image_info():
         return {}
 
 
+class IconProvider(QQuickImageProvider):
+    """Iconos de trazo recoloreados: image://icon/<nombre>/<color sin #>."""
+
+    def __init__(self):
+        super().__init__(QQuickImageProvider.ImageType.Image)
+
+    def requestImage(self, icon_id, size, requested):
+        name, _, color = icon_id.partition("/")
+        svg = (HERE / "icons" / f"{name}.svg").read_text().replace("#14161C", f"#{color or '14161C'}")
+        side = max(requested.width(), requested.height(), 24)
+        image = QImage(side, side, QImage.Format.Format_ARGB32_Premultiplied)
+        image.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(image)
+        QSvgRenderer(svg.encode()).render(painter, QRectF(0, 0, side, side))
+        painter.end()
+        if size is not None:
+            size.setWidth(side)
+            size.setHeight(side)
+        return image
+
+
 class Backend(QObject):
     appsChanged = Signal()
     message = Signal(str)
@@ -91,7 +116,11 @@ class Backend(QObject):
 
     @Property(str, constant=True)
     def logo(self):
-        return QUrl.fromLocalFile(str(LOGO)).toString()
+        return QUrl.fromLocalFile(str(SHARE / "logo.svg")).toString()
+
+    @Property(str, constant=True)
+    def logoMark(self):
+        return QUrl.fromLocalFile(str(SHARE / "logo-mark.svg")).toString()
 
     @Property("QStringList", constant=True)
     def gpus(self):
@@ -194,12 +223,16 @@ def main():
     # Estilo "Basic": la app dibuja su propio aspecto, igual en cualquier escritorio
     QQuickStyle.setStyle("Basic")
     app = QGuiApplication(sys.argv)
+    for font in FONTS.glob("*.ttf"):
+        QFontDatabase.addApplicationFont(str(font))
+    app.setFont(QFont("DM Sans", 11))
     app.setApplicationName("Bienvenida a Luma")
     app.setDesktopFileName("org.luma.Welcome")
     app.setWindowIcon(QIcon.fromTheme("luma-logo"))
 
     backend = Backend()
     engine = QQmlApplicationEngine()
+    engine.addImageProvider("icon", IconProvider())
     engine.rootContext().setContextProperty("backend", backend)
     engine.load(QUrl.fromLocalFile(str(HERE / "qml" / "Main.qml")))
     if not engine.rootObjects():

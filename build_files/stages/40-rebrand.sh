@@ -17,8 +17,8 @@ FASTFETCH=/usr/share/ublue-os/bazzite/fastfetch.jsonc
 if [[ -f "${FASTFETCH}" ]]; then
     sed -i \
         -e 's|/usr/share/ublue-os/bazzite/logo.txt|/usr/share/luma/logo.txt|' \
-        -e 's|"1": "94"|"1": "96"|' \
-        -e 's|"2": "47"|"2": "95"|' \
+        -e 's|"1": "94"|"1": "97"|' \
+        -e 's|"2": "47"|"2": "94"|' \
         "${FASTFETCH}"
 fi
 
@@ -30,6 +30,8 @@ for size in 16 22 24 32 36 48 64 96 128 256; do
 done
 mkdir -p /usr/share/icons/hicolor/scalable/apps
 cp "${LOGO_SVG}" /usr/share/icons/hicolor/scalable/apps/luma-logo.svg
+# Glifo de la estrella (blanco), para la barra y fondos oscuros
+cp /usr/share/luma/logo-mark.svg /usr/share/icons/hicolor/scalable/apps/luma-logo-mark.svg
 
 # El tamaño sale del directorio "NNxNN" que contiene el icono (directo o un nivel por encima)
 while read -r icon; do
@@ -44,3 +46,6 @@ while read -r icon; do
 done < <(find /usr/share/icons/hicolor -name 'bazzite-logo-icon.svg')
 
 gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+
+# Tipografía de Luma (DM Sans, en /usr/share/fonts/luma)
+fc-cache -f /usr/share/fonts/luma

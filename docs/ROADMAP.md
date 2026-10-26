@@ -18,7 +18,7 @@
 - [x] App de bienvenida propia (`luma-welcome`, PySide6 + QML): GPU, apps opcionales, aspecto
 - [x] Quitar el portal y los anuncios de Bazzite; MOTD, fastfetch, «Acerca de» e iconos con la marca de Luma
 - [x] Atajos familiares: Win+Espacio, Win+E, Win+Shift+S, Ctrl+Shift+Esc, Ctrl+Alt+T
-- [x] Logo de Luma (orbe de cristal con luna creciente)
+- [x] Logo de Luma: estrella estilizada (glifo + icono de cristal oscuro)
 - [ ] Probar en VM: primer arranque, instalación de flatpaks, bienvenida y atajos
 - [ ] Plymouth con el logo de Luma (requiere regenerar el initramfs)
 
@@ -27,8 +27,13 @@
 - [ ] Integración de ProtonDB / AreWeAntiCheatYet en la tienda
 - [ ] Overlay propio (FPS, temperaturas, grabación)
 
-## Fase 3: Diseño "Luma Glass"
-- [ ] Identidad: logo, paleta, tipografía, fondos dinámicos
+## Fase 3: Diseño "Luma Glass" (ver `docs/DESIGN.md`)
+- [x] Lenguaje de diseño documentado: materiales, tokens, componentes, movimiento
+- [x] Identidad: logo de estrella, paleta, tipografía DM Sans
+- [x] App de bienvenida con el estilo Luma Glass
+- [ ] Fondos de pantalla propios (claro/oscuro)
+- [ ] Barra Luma: panel flotante + plasmoides (lanzador, píldoras vivas, estado agrupado)
+- [ ] Cursor «Luma Pointer»
 - [ ] Global theme de Plasma: decoración de ventanas, Kvantum, iconos, cursores, sonidos
 - [ ] Dock flotante + lanzador centrado con blur y degradados
 - [ ] Animaciones KWin (curvas spring), esquinas redondeadas, blur mejorado
