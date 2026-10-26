@@ -9,7 +9,8 @@
 - [x] Crear el repo en GitHub (privado: github.com/zGumori/luma-os)
 - [x] Primer build en verde (las tres variantes, 2026-10-26)
 - [ ] Al hacer el proyecto público: hacer públicos los paquetes de GHCR y volver al build diario
-- [ ] Probar la ISO en una VM y en hardware real (AMD y NVIDIA)
+- [x] Generar la ISO de `luma` (5,8 GB, 2026-10-27)
+- [ ] Probar la ISO en una VM (guía: `docs/PRUEBAS-VM.md`) y en hardware real (AMD y NVIDIA)
 - [ ] Firma con cosign y política de contenedores (`/etc/containers/policy.d`) para usar `ostree-image-signed`
 - [ ] Rechunk de la imagen (actualizaciones delta más pequeñas)
 
