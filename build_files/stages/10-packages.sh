@@ -8,6 +8,10 @@ INSTALL=(
     jq
     pciutils
     libnotify
+    # App de bienvenida (Qt/QML desde Python)
+    python3-pyside6
+    # Iconos generados a partir del logo SVG
+    librsvg2-tools
     # Personalización del escritorio (Fase 3 — Luma Glass)
     kvantum
 )

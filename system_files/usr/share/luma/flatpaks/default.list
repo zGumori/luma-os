@@ -1,0 +1,13 @@
+# Apps Flatpak que Luma OS instala en el primer arranque (además de la lista de Bazzite).
+# Una referencia de Flathub por línea. Las líneas que empiezan por # se ignoran.
+
+# Ofimática y día a día
+org.libreoffice.LibreOffice
+io.missioncenter.MissionCenter
+
+# Gaming
+com.heroicgameslauncher.hgl
+com.vysp3r.ProtonPlus
+
+# Apps de Windows (.exe)
+com.usebottles.bottles

@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+exec /usr/bin/python3 /usr/share/luma/welcome/luma_welcome.py "$@"

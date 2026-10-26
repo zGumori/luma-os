@@ -7,17 +7,20 @@
 - [x] Branding básico (`os-release`, `image-info.json`)
 - [x] Detección de GPU y cambio de variante (`luma-gpu-check`, `ujust luma-switch-gpu`)
 - [x] Crear el repo en GitHub (privado: github.com/zGumori/luma-os)
-- [ ] Ver el primer build en verde
+- [x] Primer build en verde (las tres variantes, 2026-10-26)
 - [ ] Al hacer el proyecto público: hacer públicos los paquetes de GHCR y volver al build diario
 - [ ] Probar la ISO en una VM y en hardware real (AMD y NVIDIA)
 - [ ] Firma con cosign y política de contenedores (`/etc/containers/policy.d`) para usar `ostree-image-signed`
 - [ ] Rechunk de la imagen (actualizaciones delta más pequeñas)
 
-## Fase 1: Sistema base usable
-- [ ] Ofimática y apps por defecto vía Flatpak (LibreOffice/OnlyOffice, navegador)
-- [ ] App de bienvenida propia (sustituir el portal de Bazzite)
-- [ ] Revisar los textos de Bazzite visibles al usuario y cambiarlos por Luma
-- [ ] Atajos de teclado familiares (Win+E, Win+Shift+S, Win+Espacio)
+## Fase 1: Sistema base usable ← *en curso*
+- [x] Instalar las apps Flatpak por defecto en el primer arranque (`luma-flatpak-setup`): la lista de Bazzite más la de Luma (LibreOffice, Mission Center, Heroic, ProtonPlus, Bottles)
+- [x] App de bienvenida propia (`luma-welcome`, PySide6 + QML): GPU, apps opcionales, aspecto
+- [x] Quitar el portal y los anuncios de Bazzite; MOTD, fastfetch, «Acerca de» e iconos con la marca de Luma
+- [x] Atajos familiares: Win+Espacio, Win+E, Win+Shift+S, Ctrl+Shift+Esc, Ctrl+Alt+T
+- [x] Logo de Luma (orbe de cristal con luna creciente)
+- [ ] Probar en VM: primer arranque, instalación de flatpaks, bienvenida y atajos
+- [ ] Plymouth con el logo de Luma (requiere regenerar el initramfs)
 
 ## Fase 2: Gaming
 - [ ] Perfiles automáticos por juego (GameMode + governor + MangoHud)

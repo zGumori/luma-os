@@ -1,0 +1,22 @@
+# Atajos por defecto de Luma OS, familiares para quien viene de Windows o macOS.
+# Meta = tecla Windows/Super. Cada usuario puede cambiarlos en Preferencias > Atajos.
+
+# Buscador tipo Spotlight
+[services][org.kde.krunner.desktop]
+_launch=Meta+Space\tAlt+Space\tAlt+F2\tSearch
+
+# Explorador de archivos (Win+E)
+[services][org.kde.dolphin.desktop]
+_launch=Meta+E
+
+# Captura de una región (Win+Shift+S)
+[services][org.kde.spectacle.desktop]
+RectangularRegionScreenShot=Meta+Shift+S
+
+# Administrador de tareas (Ctrl+Shift+Esc)
+[services][org.kde.plasma-systemmonitor.desktop]
+_launch=Ctrl+Shift+Esc
+
+# Terminal (Ctrl+Alt+T)
+[services][org.kde.konsole.desktop]
+_launch=Ctrl+Alt+T

@@ -1,0 +1,5 @@
+[General]
+LogoPath=/usr/share/luma/logo.svg
+Website=https://github.com/zGumori/luma-os
+Variant=Luma OS
+UseOSReleaseVersion=true

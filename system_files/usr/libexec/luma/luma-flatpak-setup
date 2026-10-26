@@ -1,0 +1,54 @@
+#!/usr/bin/bash
+# Instala las apps Flatpak por defecto en el primer arranque (y cuando cambian las listas).
+# Bazzite las instala desde su propio instalador; la ISO de Luma no lo hace, así que
+# este servicio se encarga. Solo se marca como completado si no hubo fallos reales.
+set -uo pipefail
+
+LISTS=(
+    /usr/share/ublue-os/bazzite/flatpak/install
+    /usr/share/luma/flatpaks/default.list
+)
+STATE_DIR=/var/lib/luma
+DONE_FILE="${STATE_DIR}/flatpak-setup.done"
+
+refs() {
+    local list
+    for list in "${LISTS[@]}"; do
+        [[ -f "${list}" ]] && grep -vE '^\s*(#|$)' "${list}"
+    done | sort -u
+}
+
+LISTS_HASH="$(refs | sha256sum | cut -d' ' -f1)"
+if [[ -f "${DONE_FILE}" && "$(cat "${DONE_FILE}")" == "${LISTS_HASH}" ]]; then
+    echo "Las apps por defecto ya están instaladas."
+    exit 0
+fi
+
+flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo || :
+flatpak remote-modify --system --enable flathub || :
+
+failed=0
+while read -r ref; do
+    if flatpak info --system "${ref}" &>/dev/null; then
+        continue
+    fi
+    # Referencias que ya no existen en Flathub (p. ej. ramas antiguas) se saltan sin reintentar
+    if ! flatpak remote-info --system flathub "${ref}" &>/dev/null; then
+        echo "Aviso: ${ref} no está disponible en Flathub, se omite."
+        continue
+    fi
+    echo "Instalando ${ref}..."
+    if ! flatpak install --system --noninteractive --assumeyes flathub "${ref}"; then
+        echo "Error instalando ${ref}"
+        failed=1
+    fi
+done < <(refs)
+
+if ((failed)); then
+    echo "Algunas apps no se instalaron; se reintentará en el próximo arranque."
+    exit 1
+fi
+
+mkdir -p "${STATE_DIR}"
+echo "${LISTS_HASH}" > "${DONE_FILE}"
+echo "Apps por defecto instaladas."

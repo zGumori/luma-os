@@ -9,7 +9,10 @@ if [[ -f "${JUSTFILE}" ]] && ! grep -qF "${LUMA_JUST}" "${JUSTFILE}"; then
     echo "import \"${LUMA_JUST}\"" >> "${JUSTFILE}"
 fi
 
-chmod 0755 /usr/libexec/luma/*
+chmod 0755 /usr/libexec/luma/* /usr/bin/luma-welcome
 
 # Comprobación de GPU en cada inicio de sesión (servicio de usuario global)
 systemctl --global enable luma-gpu-check.service
+
+# Apps Flatpak por defecto en el primer arranque
+systemctl enable luma-flatpak-setup.service

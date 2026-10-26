@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Bienvenida a Luma
+Comment=Configura tu tarjeta gráfica, apps y aspecto
+Exec=luma-welcome
+Icon=luma-logo
+Categories=System;Settings;
+Keywords=luma;bienvenida;welcome;setup;configurar;

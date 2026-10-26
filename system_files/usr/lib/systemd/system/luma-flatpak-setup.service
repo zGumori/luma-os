@@ -1,0 +1,15 @@
+[Unit]
+Description=Luma OS: instalar las apps Flatpak por defecto
+Wants=network-online.target
+After=network-online.target bazzite-flatpak-manager.service
+
+[Service]
+# exec (no oneshot) para no retrasar el arranque mientras se descargan las apps
+Type=exec
+ExecStart=/usr/libexec/luma/luma-flatpak-setup
+Restart=on-failure
+RestartSec=5min
+Nice=10
+
+[Install]
+WantedBy=multi-user.target
