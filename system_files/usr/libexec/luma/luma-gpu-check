@@ -1,0 +1,113 @@
+#!/usr/bin/bash
+# Detecta la GPU y comprueba que la variante de Luma OS instalada es la adecuada.
+#
+#   luma-gpu-check              Notifica (una vez) si la imagen no coincide con la GPU
+#   luma-gpu-check --recommend  Imprime la variante recomendada
+#   luma-gpu-check --switch     Cambia a la variante recomendada (pide confirmación)
+set -euo pipefail
+
+IMAGE_INFO=/usr/share/ublue-os/image-info.json
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/luma"
+
+current_image() {
+    jq -r '."image-name" // "luma"' "${IMAGE_INFO}" 2>/dev/null || echo luma
+}
+
+image_vendor() {
+    jq -r '."image-vendor" // "luma-os"' "${IMAGE_INFO}" 2>/dev/null || echo luma-os
+}
+
+image_tag() {
+    jq -r '."image-tag" // "stable"' "${IMAGE_INFO}" 2>/dev/null || echo stable
+}
+
+# Nombres de las GPU de vídeo (VGA y 3D) presentes en el equipo
+gpu_names() {
+    lspci -mm -d ::0300 2>/dev/null
+    lspci -mm -d ::0302 2>/dev/null
+}
+
+recommend() {
+    local gpus nvidia
+    gpus="$(gpu_names)"
+    nvidia="$(grep -i 'nvidia' <<<"${gpus}" || true)"
+
+    if [[ -z "${nvidia}" ]]; then
+        echo luma
+    # Maxwell y Pascal no admiten los módulos abiertos de NVIDIA
+    elif grep -qiE 'GTX (9[0-9]{2}|10[0-9]{2})|TITAN (X|Xp)|Quadro (M|P)[0-9]+|GeForce (9[0-9]{2}|10[0-9]{2})M?' <<<"${nvidia}"; then
+        echo luma-nvidia-legacy
+    else
+        echo luma-nvidia
+    fi
+}
+
+switch_image() {
+    local target current ref
+    target="$(recommend)"
+    current="$(current_image)"
+    ref="ghcr.io/$(image_vendor)/${target}:$(image_tag)"
+
+    echo "GPU detectada:"
+    gpu_names | sed 's/^/  /'
+    echo
+    echo "Variante actual:      ${current}"
+    echo "Variante recomendada: ${target}"
+
+    if [[ "${target}" == "${current}" ]]; then
+        echo "Ya estás usando la variante adecuada."
+        return 0
+    fi
+
+    echo
+    read -rp "¿Cambiar a ${ref}? Se aplicará al reiniciar. [s/N] " answer
+    if [[ "${answer,,}" == s* ]]; then
+        sudo bootc switch "${ref}"
+        echo "Listo. Reinicia para usar ${target}."
+    else
+        echo "Cancelado."
+    fi
+}
+
+open_terminal() {
+    local t
+    for t in ptyxis konsole; do
+        if command -v "${t}" >/dev/null; then
+            case "${t}" in
+                ptyxis) exec ptyxis -- "$@" ;;
+                konsole) exec konsole -e "$@" ;;
+            esac
+        fi
+    done
+}
+
+notify_mismatch() {
+    local target current marker
+    target="$(recommend)"
+    current="$(current_image)"
+    [[ "${target}" == "${current}" ]] && return 0
+
+    # Solo se avisa una vez por cada recomendación distinta
+    mkdir -p "${STATE_DIR}"
+    marker="${STATE_DIR}/gpu-check-${current}-to-${target}"
+    [[ -e "${marker}" ]] && return 0
+    touch "${marker}"
+
+    local action
+    action="$(notify-send --app-name="Luma OS" --icon=video-display \
+        --action=switch="Cambiar ahora" --action=later="Más tarde" --wait \
+        "Optimiza Luma para tu tarjeta gráfica" \
+        "Tu GPU funciona mejor con la variante «${target}». Ahora usas «${current}»." \
+        || true)"
+
+    if [[ "${action}" == "switch" ]]; then
+        open_terminal /usr/libexec/luma/luma-gpu-check --switch
+    fi
+}
+
+case "${1:-}" in
+    --recommend) recommend ;;
+    --switch) switch_image ;;
+    "") notify_mismatch ;;
+    *) echo "Uso: $0 [--recommend|--switch]" >&2; exit 2 ;;
+esac

@@ -1,0 +1,107 @@
+name: Build Luma OS images
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**"]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "30 22 * * 0" # semanal (domingo): el repo es privado y los minutos de Actions son limitados
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_TAG: stable
+  HAS_SIGNING_KEY: ${{ secrets.SIGNING_SECRET != '' }}
+
+jobs:
+  lint:
+    name: Lint scripts
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellCheck
+        run: |
+          shellcheck --version
+          shellcheck -x build_files/build.sh build_files/stages/*.sh system_files/usr/libexec/luma/*
+
+  build:
+    name: Build ${{ matrix.image }}
+    needs: lint
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: luma
+            base: ghcr.io/ublue-os/bazzite:stable
+          - image: luma-nvidia
+            base: ghcr.io/ublue-os/bazzite-nvidia-open:stable
+          - image: luma-nvidia-legacy
+            base: ghcr.io/ublue-os/bazzite-nvidia:stable
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          df -h /
+
+      - name: Prepare environment
+        run: |
+          owner="${{ github.repository_owner }}"
+          echo "IMAGE_REGISTRY=ghcr.io/${owner,,}" >> "$GITHUB_ENV"
+          echo "IMAGE_VENDOR=${owner,,}" >> "$GITHUB_ENV"
+          echo "DATE_TAG=${IMAGE_TAG}-$(date -u +%Y%m%d)" >> "$GITHUB_ENV"
+
+      - name: Build image
+        run: |
+          podman build \
+            --pull=newer \
+            --build-arg BASE_IMAGE=${{ matrix.base }} \
+            --build-arg IMAGE_NAME=${{ matrix.image }} \
+            --build-arg IMAGE_VENDOR=${IMAGE_VENDOR} \
+            --build-arg IMAGE_TAG=${IMAGE_TAG} \
+            --label org.opencontainers.image.title="Luma OS" \
+            --label org.opencontainers.image.description="Luma OS: gaming y diseño cuidado sobre Fedora Atomic" \
+            --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            --label org.opencontainers.image.version=${DATE_TAG} \
+            --tag ${{ matrix.image }}:${IMAGE_TAG} \
+            --file Containerfile .
+
+      - name: Push to GHCR
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        id: push
+        run: |
+          set -euxo pipefail
+          echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for tag in "${IMAGE_TAG}" "${DATE_TAG}"; do
+            podman push --digestfile=/tmp/digest \
+              ${{ matrix.image }}:${IMAGE_TAG} \
+              ${IMAGE_REGISTRY}/${{ matrix.image }}:${tag}
+          done
+          echo "digest=$(cat /tmp/digest)" >> "$GITHUB_OUTPUT"
+
+      - name: Install cosign
+        if: steps.push.outcome == 'success' && env.HAS_SIGNING_KEY == 'true'
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign image
+        if: steps.push.outcome == 'success' && env.HAS_SIGNING_KEY == 'true'
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          COSIGN_PASSWORD: ""
+        run: |
+          cosign login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY \
+            ${IMAGE_REGISTRY}/${{ matrix.image }}@${{ steps.push.outputs.digest }}

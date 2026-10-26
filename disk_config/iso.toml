@@ -1,0 +1,24 @@
+# Configuración del instalador (bootc-image-builder, tipo anaconda-iso).
+# @IMAGE_REF@ lo sustituye el workflow build-iso.yml por la imagen de la variante.
+
+[customizations.installer.kickstart]
+contents = """
+%post
+bootc switch --mutate-in-place --transport registry @IMAGE_REF@
+%end
+"""
+
+[customizations.installer.modules]
+enable = [
+  "org.fedoraproject.Anaconda.Modules.Storage",
+  "org.fedoraproject.Anaconda.Modules.Runtime",
+  "org.fedoraproject.Anaconda.Modules.Network",
+  "org.fedoraproject.Anaconda.Modules.Security",
+  "org.fedoraproject.Anaconda.Modules.Services",
+  "org.fedoraproject.Anaconda.Modules.Users",
+  "org.fedoraproject.Anaconda.Modules.Timezone",
+  "org.fedoraproject.Anaconda.Modules.Localization",
+]
+disable = [
+  "org.fedoraproject.Anaconda.Modules.Subscription",
+]

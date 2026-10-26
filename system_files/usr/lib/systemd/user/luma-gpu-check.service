@@ -1,0 +1,12 @@
+[Unit]
+Description=Luma OS: comprobar que la variante instalada coincide con la GPU
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/sleep 20
+ExecStart=/usr/libexec/luma/luma-gpu-check
+
+[Install]
+WantedBy=graphical-session.target
