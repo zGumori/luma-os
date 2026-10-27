@@ -22,6 +22,9 @@ python3 /ctx/tools/render_boot.py "${SPINNER}/watermark.png"
 cat "${SPINNER}/spinner.plymouth" || true
 # Marca centrada (la ruedita de carga queda debajo)
 sed -i 's/^WatermarkVerticalAlignment=.*/WatermarkVerticalAlignment=.45/' "${SPINNER}/spinner.plymouth"
+# La base usa «bgrt» (logo del fabricante en el centro); Luma usa «spinner» con su propia marca
+mkdir -p /etc/plymouth
+printf '[Daemon]\nTheme=spinner\n' > /etc/plymouth/plymouthd.conf
 grep -i '^Theme' /etc/plymouth/plymouthd.conf /usr/share/plymouth/plymouthd.defaults 2>/dev/null || true
 
 # Mismo comando que usa Bazzite (build_files/build-initramfs) para no cambiar nada más del arranque
