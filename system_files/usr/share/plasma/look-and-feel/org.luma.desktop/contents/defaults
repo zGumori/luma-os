@@ -14,7 +14,8 @@ name=luma
 Image=Luma
 
 [kcminputrc][Mouse]
-cursorTheme=breeze_cursors
+cursorTheme=LumaPointer
+cursorSize=32
 
 [kwinrc][WindowSwitcher]
 LayoutName=org.kde.breeze.desktop

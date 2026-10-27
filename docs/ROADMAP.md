@@ -41,8 +41,10 @@
 - [x] Decoración de ventana Luma / Luma Oscuro (Aurorae) con controles agrupados en una píldora
 - [ ] Cristal claro en el contenido de las ventanas (Kvantum + desenfoque forzado)
 - [ ] Instalador (Anaconda) con la marca de Luma en lugar de la de Fedora
-- [ ] Arranque (Plymouth), inicio de sesión (SDDM) y bloqueo con la estrella de Luma
-- [ ] Cursor «Luma Pointer»
+- [x] Arranque (Plymouth) con la marca de Luma (initramfs regenerado en el build)
+- [x] Inicio de sesión (SDDM) «luma»: reloj, avatar y contraseña en píldora de cristal
+- [ ] Pantalla de bloqueo de Plasma con el mismo diseño que el inicio de sesión
+- [x] Cursor «Luma Pointer» (flecha, mano, texto, espera y progreso animados)
 - [ ] Animaciones de KWin: abrir/cerrar ventanas con escala y desenfoque
 - [ ] Iconos y sonidos de Luma
 - [ ] Tema para apps GTK / libadwaita

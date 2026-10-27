@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Estrella de Luma: destello de cuatro puntas (rayos verticales más largos) + estrella compañera -->
+  <path fill="#FFFFFF" d="M120 40 Q129.5 126.5 188 136 Q129.5 145.5 120 232 Q110.5 145.5 52 136 Q110.5 126.5 120 40 Z"/>
+  <path fill="#FFFFFF" d="M190 38 Q193.2 66.8 212 70 Q193.2 73.2 190 102 Q186.8 73.2 168 70 Q186.8 66.8 190 38 Z"/>
+</svg>

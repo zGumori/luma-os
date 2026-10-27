@@ -1,0 +1,13 @@
+[SddmGreeterTheme]
+Name=Luma
+Description=Inicio de sesión de Luma OS (Luma Glass)
+Author=Luma OS
+License=GPL-2.0-or-later
+Type=sddm-theme
+Version=0.1
+Website=https://github.com/zGumori/luma-os
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=luma
+Theme-API=2.0
+QtVersion=6
