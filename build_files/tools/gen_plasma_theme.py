@@ -145,11 +145,11 @@ enabled=false
 def main():
     (THEME / "widgets").mkdir(parents=True, exist_ok=True)
     (THEME / "dialogs").mkdir(parents=True, exist_ok=True)
-    (THEME / "widgets" / "panel-background.svg").write_text(frame_svg(16, 0.62, (5, 5, 10, 10)), newline="\n")
-    (THEME / "dialogs" / "background.svg").write_text(frame_svg(18, 0.80, (12, 12, 12, 12)), newline="\n")
-    (THEME / "widgets" / "tooltip.svg").write_text(frame_svg(12, 0.86, (8, 8, 10, 10)), newline="\n")
-    (THEME / "colors").write_text(COLORS, newline="\n")
-    (THEME / "plasmarc").write_text(PLASMARC, newline="\n")
+    (THEME / "widgets" / "panel-background.svg").write_text(frame_svg(16, 0.62, (5, 5, 10, 10)), encoding="utf-8", newline="\n")
+    (THEME / "dialogs" / "background.svg").write_text(frame_svg(18, 0.80, (12, 12, 12, 12)), encoding="utf-8", newline="\n")
+    (THEME / "widgets" / "tooltip.svg").write_text(frame_svg(12, 0.86, (8, 8, 10, 10)), encoding="utf-8", newline="\n")
+    (THEME / "colors").write_text(COLORS, encoding="utf-8", newline="\n")
+    (THEME / "plasmarc").write_text(PLASMARC, encoding="utf-8", newline="\n")
     metadata = {
         "KPlugin": {
             "Id": "luma",
@@ -162,7 +162,7 @@ def main():
         },
         "X-Plasma-API-Minimum-Version": "6.0",
     }
-    (THEME / "metadata.json").write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", newline="\n")
+    (THEME / "metadata.json").write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     print(f"Tema generado en {THEME}")
 
 

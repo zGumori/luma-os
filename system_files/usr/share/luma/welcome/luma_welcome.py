@@ -194,6 +194,11 @@ class Backend(QObject):
             args = ["--accent-color", accent, scheme]
         if not QProcess.startDetached("plasma-apply-colorscheme", args)[0]:
             self.message.emit("No se pudo aplicar el aspecto (solo funciona en KDE Plasma).")
+            return
+        # Decoración de ventana a juego (Luma / LumaDark) y aviso a KWin para recargarla
+        theme = "__aurorae__svg__LumaDark" if dark else "__aurorae__svg__Luma"
+        run(["kwriteconfig6", "--file", "kwinrc", "--group", "org.kde.kdecoration2", "--key", "theme", theme])
+        run(["dbus-send", "--session", "--type=method_call", "--dest=org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure"])
 
     # --- Otros -------------------------------------------------------------
 

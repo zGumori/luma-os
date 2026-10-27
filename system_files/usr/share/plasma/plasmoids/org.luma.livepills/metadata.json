@@ -1,0 +1,15 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Id": "org.luma.livepills",
+    "Name": "Píldoras vivas",
+    "Description": "Muestra en la Barra Luma lo que está pasando ahora: música, «No molestar»…",
+    "Icon": "luma-logo-mark",
+    "Category": "Multimedia",
+    "Authors": [{ "Name": "Luma OS" }],
+    "License": "GPL-2.0-or-later",
+    "Version": "0.1",
+    "Website": "https://github.com/zGumori/luma-os"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,5 +1,5 @@
 // Disposición inicial de Luma OS: la Barra Luma (docs/DESIGN.md).
-// Lanzador con la estrella · apps ancladas · espacio central · bandeja · reloj.
+// Lanzador con la estrella · apps ancladas · píldoras vivas · bandeja · reloj.
 
 var panel = new Panel;
 panel.location = "bottom";
@@ -22,7 +22,9 @@ tasks.writeConfig("launchers", [
     "applications:org.kde.discover.desktop"
 ]);
 
-// Espacio central: aquí irán las píldoras vivas
+// Centro: píldoras vivas (música, «No molestar»…) entre dos espaciadores
+panel.addWidget("org.kde.plasma.panelspacer");
+panel.addWidget("org.luma.livepills");
 panel.addWidget("org.kde.plasma.panelspacer");
 panel.addWidget("org.kde.plasma.systemtray");
 

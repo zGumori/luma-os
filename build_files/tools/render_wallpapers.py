@@ -201,7 +201,7 @@ def write_package(out, name, title, day, night):
             "License": "CC-BY-SA-4.0",
         }
     }
-    (root / "metadata.json").write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n")
+    (root / "metadata.json").write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def main():

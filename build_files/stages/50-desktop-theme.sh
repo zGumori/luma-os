@@ -27,6 +27,11 @@ kw kdeglobals --group WM --key activeFont "DM Sans,10,-1,5,600,0,0,0,0,0,0,0,0,0
 # Pantalla de bloqueo con el fondo de Luma
 kw kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General \
     --key Image "file:///usr/share/wallpapers/Luma/"
+# Decoración de ventana Luma (Aurorae) con los controles agrupados a la derecha
+kw kwinrc --group org.kde.kdecoration2 --key library org.kde.kwin.aurorae
+kw kwinrc --group org.kde.kdecoration2 --key theme __aurorae__svg__Luma
+kw kwinrc --group org.kde.kdecoration2 --key ButtonsOnLeft ""
+kw kwinrc --group org.kde.kdecoration2 --key ButtonsOnRight IAX
 # Desenfoque de KWin activado (lo usan la barra y los menús de cristal)
 kw kwinrc --group Plugins --key blurEnabled true
 kw kwinrc --group Plugins --key contrastEnabled true

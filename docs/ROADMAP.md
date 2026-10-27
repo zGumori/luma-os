@@ -36,15 +36,15 @@
 - [x] Esquemas de color Luma Claro / Luma Oscuro
 - [x] Estilo de Plasma «Luma» (cristal oscuro: barra, menús, avisos)
 - [x] Tema global `org.luma.desktop` + Barra Luma flotante para usuarios nuevos (`ujust luma-apply-desktop` para los existentes)
-- [ ] Píldoras vivas (plasmoide propio: música, temporizador, grabación) y estado agrupado
-- [ ] Decoración de ventana con controles en píldora + cristal claro en ventanas (desenfoque forzado)
+- [x] Píldoras vivas (plasmoide `org.luma.livepills`): música con carátula y «No molestar»
+- [ ] Más píldoras vivas: temporizador, grabación de pantalla, descargas; estado agrupado (wifi/volumen/batería)
+- [x] Decoración de ventana Luma / Luma Oscuro (Aurorae) con controles agrupados en una píldora
+- [ ] Cristal claro en el contenido de las ventanas (Kvantum + desenfoque forzado)
 - [ ] Instalador (Anaconda) con la marca de Luma en lugar de la de Fedora
 - [ ] Arranque (Plymouth), inicio de sesión (SDDM) y bloqueo con la estrella de Luma
 - [ ] Cursor «Luma Pointer»
-- [ ] Global theme de Plasma: decoración de ventanas, Kvantum, iconos, cursores, sonidos
-- [ ] Dock flotante + lanzador centrado con blur y degradados
-- [ ] Animaciones KWin (curvas spring), esquinas redondeadas, blur mejorado
-- [ ] SDDM, Plymouth y pantalla de bloqueo coherentes
+- [ ] Animaciones de KWin: abrir/cerrar ventanas con escala y desenfoque
+- [ ] Iconos y sonidos de Luma
 - [ ] Tema para apps GTK / libadwaita
 - [ ] Modo Foco: sin blur ni animaciones con juegos a pantalla completa
 - [ ] Selector de look en la bienvenida: Luma / Familiar Windows / Familiar Mac

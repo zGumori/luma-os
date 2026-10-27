@@ -1,0 +1,14 @@
+{
+  "KPlugin": {
+    "Id": "Luma",
+    "Name": "Luma",
+    "Description": "Decoración de ventana de Luma OS",
+    "Authors": [
+      {
+        "Name": "Luma OS"
+      }
+    ],
+    "License": "GPL-2.0-or-later",
+    "Version": "0.1"
+  }
+}
