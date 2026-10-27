@@ -32,8 +32,14 @@
 - [x] Lenguaje de diseño documentado: materiales, tokens, componentes, movimiento
 - [x] Identidad: logo de estrella, paleta, tipografía DM Sans
 - [x] App de bienvenida con el estilo Luma Glass
-- [ ] Fondos de pantalla propios (claro/oscuro)
-- [ ] Barra Luma: panel flotante + plasmoides (lanzador, píldoras vivas, estado agrupado)
+- [x] Fondos de pantalla propios (claro/oscuro), generados en el build
+- [x] Esquemas de color Luma Claro / Luma Oscuro
+- [x] Estilo de Plasma «Luma» (cristal oscuro: barra, menús, avisos)
+- [x] Tema global `org.luma.desktop` + Barra Luma flotante para usuarios nuevos (`ujust luma-apply-desktop` para los existentes)
+- [ ] Píldoras vivas (plasmoide propio: música, temporizador, grabación) y estado agrupado
+- [ ] Decoración de ventana con controles en píldora + cristal claro en ventanas (desenfoque forzado)
+- [ ] Instalador (Anaconda) con la marca de Luma en lugar de la de Fedora
+- [ ] Arranque (Plymouth), inicio de sesión (SDDM) y bloqueo con la estrella de Luma
 - [ ] Cursor «Luma Pointer»
 - [ ] Global theme de Plasma: decoración de ventanas, Kvantum, iconos, cursores, sonidos
 - [ ] Dock flotante + lanzador centrado con blur y degradados

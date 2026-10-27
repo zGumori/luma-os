@@ -16,3 +16,12 @@ luma-info:
 [group('Luma')]
 luma-switch-gpu:
     /usr/libexec/luma/luma-gpu-check --switch
+
+# Aplica el escritorio Luma (tema, colores, fondo y Barra Luma). Reemplaza tus paneles actuales.
+[group('Luma')]
+luma-apply-desktop:
+    #!/usr/bin/bash
+    read -rp "Se reemplazarán tus paneles y el fondo actuales por los de Luma. ¿Continuar? [s/N] " answer
+    if [[ "${answer,,}" == s* ]]; then
+        plasma-apply-lookandfeel --apply org.luma.desktop --resetLayout
+    fi

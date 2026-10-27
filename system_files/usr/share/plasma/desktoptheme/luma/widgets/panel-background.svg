@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="105" viewBox="0 0 48 105">
+  <g id="topleft" transform="translate(0,0)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 16,0 A 16,16 0 0 0 0,16 L 16,16 Z" fill="#14171F" fill-opacity="0.62"/><path d="M 16,0 A 16,16 0 0 0 0,16 L 1,16 A 15,15 0 0 1 16,1 Z" fill="#FFFFFF" fill-opacity="0.18"/></g>
+  <g id="top" transform="translate(18,0)"><rect x="0" y="0" width="8" height="16" fill="none"/><rect x="0" y="0" width="8" height="16" fill="#14171F" fill-opacity="0.62"/><rect x="0" y="0" width="8" height="1" fill="#FFFFFF" fill-opacity="0.18"/></g>
+  <g id="topright" transform="translate(28,0)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 0,0 A 16,16 0 0 1 16,16 L 0,16 Z" fill="#14171F" fill-opacity="0.62"/><path d="M 0,0 A 16,16 0 0 1 16,16 L 15,16 A 15,15 0 0 0 0,1 Z" fill="#FFFFFF" fill-opacity="0.18"/></g>
+  <g id="left" transform="translate(0,18)"><rect x="0" y="0" width="16" height="8" fill="none"/><rect x="0" y="0" width="16" height="8" fill="#14171F" fill-opacity="0.62"/><rect x="0" y="0" width="1" height="8" fill="#FFFFFF" fill-opacity="0.1"/></g>
+  <g id="center" transform="translate(18,18)"><rect x="0" y="0" width="8" height="8" fill="none"/><rect x="0" y="0" width="8" height="8" fill="#14171F" fill-opacity="0.62"/></g>
+  <g id="right" transform="translate(28,18)"><rect x="0" y="0" width="16" height="8" fill="none"/><rect x="0" y="0" width="16" height="8" fill="#14171F" fill-opacity="0.62"/><rect x="15" y="0" width="1" height="8" fill="#FFFFFF" fill-opacity="0.1"/></g>
+  <g id="bottomleft" transform="translate(0,28)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 0,0 A 16,16 0 0 0 16,16 L 16,0 Z" fill="#14171F" fill-opacity="0.62"/><path d="M 0,0 A 16,16 0 0 0 16,16 L 16,15 A 15,15 0 0 1 1,0 Z" fill="#FFFFFF" fill-opacity="0.1"/></g>
+  <g id="bottom" transform="translate(18,28)"><rect x="0" y="0" width="8" height="16" fill="none"/><rect x="0" y="0" width="8" height="16" fill="#14171F" fill-opacity="0.62"/><rect x="0" y="15" width="8" height="1" fill="#FFFFFF" fill-opacity="0.1"/></g>
+  <g id="bottomright" transform="translate(28,28)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 16,0 A 16,16 0 0 1 0,16 L 0,0 Z" fill="#14171F" fill-opacity="0.62"/><path d="M 16,0 A 16,16 0 0 1 0,16 L 0,15 A 15,15 0 0 0 15,0 Z" fill="#FFFFFF" fill-opacity="0.1"/></g>
+  <g id="mask-topleft" transform="translate(0,48)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 16,0 A 16,16 0 0 0 0,16 L 16,16 Z" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-top" transform="translate(18,48)"><rect x="0" y="0" width="8" height="16" fill="none"/><rect x="0" y="0" width="8" height="16" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-topright" transform="translate(28,48)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 0,0 A 16,16 0 0 1 16,16 L 0,16 Z" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-left" transform="translate(0,66)"><rect x="0" y="0" width="16" height="8" fill="none"/><rect x="0" y="0" width="16" height="8" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-center" transform="translate(18,66)"><rect x="0" y="0" width="8" height="8" fill="none"/><rect x="0" y="0" width="8" height="8" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-right" transform="translate(28,66)"><rect x="0" y="0" width="16" height="8" fill="none"/><rect x="0" y="0" width="16" height="8" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-bottomleft" transform="translate(0,76)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 0,0 A 16,16 0 0 0 16,16 L 16,0 Z" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-bottom" transform="translate(18,76)"><rect x="0" y="0" width="8" height="16" fill="none"/><rect x="0" y="0" width="8" height="16" fill="#000000" fill-opacity="1"/></g>
+  <g id="mask-bottomright" transform="translate(28,76)"><rect x="0" y="0" width="16" height="16" fill="none"/><path d="M 16,0 A 16,16 0 0 1 0,16 L 0,0 Z" fill="#000000" fill-opacity="1"/></g>
+  <rect id="hint-top-margin" x="0" y="96" width="1" height="5" fill="none"/>
+  <rect id="hint-bottom-margin" x="2" y="96" width="1" height="5" fill="none"/>
+  <rect id="hint-left-margin" x="4" y="96" width="10" height="1" fill="none"/>
+  <rect id="hint-right-margin" x="4" y="98" width="10" height="1" fill="none"/>
+</svg>

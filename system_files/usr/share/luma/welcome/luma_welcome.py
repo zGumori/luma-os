@@ -188,7 +188,7 @@ class Backend(QObject):
 
     @Slot(bool, str)
     def applyLook(self, dark, accent):
-        scheme = "BreezeDark" if dark else "BreezeLight"
+        scheme = "LumaDark" if dark else "LumaLight"
         args = [scheme]
         if accent:
             args = ["--accent-color", accent, scheme]

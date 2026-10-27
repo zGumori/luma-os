@@ -1,0 +1,9 @@
+# Efectos de KWin detrás de los paneles y diálogos del tema
+[ContrastEffect]
+enabled=true
+contrast=0.25
+intensity=0.9
+saturation=1.8
+
+[AdaptiveTransparency]
+enabled=false

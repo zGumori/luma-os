@@ -1,0 +1,13 @@
+{
+  "KPackageStructure": "Plasma/LookAndFeel",
+  "KPlugin": {
+    "Id": "org.luma.desktop",
+    "Name": "Luma",
+    "Description": "Tema global de Luma OS: cristal, barra flotante y fondos de Luma",
+    "Authors": [{ "Name": "Luma OS" }],
+    "License": "GPL-2.0-or-later",
+    "Version": "0.1",
+    "Website": "https://github.com/zGumori/luma-os"
+  },
+  "X-Plasma-APIVersion": "2"
+}

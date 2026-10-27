@@ -1,0 +1,16 @@
+{
+  "KPlugin": {
+    "Id": "luma",
+    "Name": "Luma",
+    "Description": "Cristal oscuro de Luma OS",
+    "Authors": [
+      {
+        "Name": "Luma OS"
+      }
+    ],
+    "License": "GPL-2.0-or-later",
+    "Version": "0.1",
+    "Website": "https://github.com/zGumori/luma-os"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0"
+}

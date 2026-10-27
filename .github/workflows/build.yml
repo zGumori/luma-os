@@ -29,7 +29,7 @@ jobs:
           shellcheck --version
           shellcheck -x build_files/build.sh build_files/stages/*.sh system_files/usr/libexec/luma/* system_files/usr/bin/luma-welcome
       - name: Python
-        run: python3 -m py_compile system_files/usr/share/luma/welcome/*.py
+        run: python3 -m py_compile system_files/usr/share/luma/welcome/*.py build_files/tools/*.py
 
   build:
     name: Build ${{ matrix.image }}
