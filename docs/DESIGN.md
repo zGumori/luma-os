@@ -115,7 +115,14 @@ Cursor propio **«Luma Pointer»**: flecha grande y redondeada, relleno blanco, 
 - El fondo de pantalla se ve sin oscurecer.
 
 ### Fondos de pantalla
-Formas 3D suaves y luminosas: esferas, cintas de luz y nubes redondeadas. Cada fondo tiene versión clara y oscura. Son fondos propios de Luma, generados para el proyecto.
+Minimalistas, abstractos y propios de Luma, construidos con la geometría de la estrella. El fondo por defecto es **«Destello»**: una estrella de Luma gigante recortada por el borde y rellena de luz, con un resplandor difuminado y una estrella pequeña y nítida que la acompaña. Tiene mucho espacio vacío para que la barra y las ventanas respiren.
+- **Claro:** azul sobre blanco cálido (`#F6F4F0`).
+- **Oscuro:** luz cálida de naranja a magenta sobre negro (`#07080D`).
+
+Se generan en el build (`build_files/tools/render_wallpapers.py`) con grano fino para evitar bandas. Se usan en el escritorio, el inicio de sesión y la pantalla de bloqueo.
+
+### Cursor
+Punta de flecha sin tallo con muesca en la base, esquinas muy redondeadas, contorno negro grueso, relleno blanco y sombra difuminada. La mano, el texto y los cursores de espera usan el mismo trazo.
 
 ## Logo
 
