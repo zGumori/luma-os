@@ -106,9 +106,6 @@ Una única barra de cristal oscuro flotando sobre el borde inferior:
 - **Interruptor:** píldora de 46×26 y mando blanco que se desliza con rebote.
 - **Campo de contraseña:** píldora de cristal oscuro con puntos grandes y botón de ojo a la derecha.
 
-### Cursor
-Cursor propio **«Luma Pointer»**: flecha grande y redondeada, relleno blanco, contorno negro de 3 px con esquinas redondas y sombra suave. Tamaño por defecto 32 px.
-
 ### Pantalla de bloqueo
 - Reloj enorme y fino arriba a la izquierda, con la fecha encima en `ink-3`.
 - En el centro, avatar circular, nombre en 28/600 y campo de contraseña en píldora de cristal oscuro.
@@ -122,7 +119,7 @@ Minimalistas, abstractos y propios de Luma, construidos con la geometría de la 
 Se generan en el build (`build_files/tools/render_wallpapers.py`) con grano fino para evitar bandas. Se usan en el escritorio, el inicio de sesión y la pantalla de bloqueo.
 
 ### Cursor
-Punta de flecha sin tallo con muesca en la base, esquinas muy redondeadas, contorno negro grueso, relleno blanco y sombra difuminada. La mano, el texto y los cursores de espera usan el mismo trazo.
+**«Luma Pointer»**: punta de flecha sin tallo con muesca en la base, esquinas muy redondeadas, contorno negro grueso, relleno blanco y sombra difuminada. La mano, el texto y los cursores de espera usan el mismo trazo. Tamaño por defecto: 32 px.
 
 ## Logo
 
