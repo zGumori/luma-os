@@ -1,0 +1,14 @@
+{
+  "KPackageStructure": "KWin/Script",
+  "KPlugin": {
+    "Id": "lumagamewatch",
+    "Name": "Luma: Modo Juego",
+    "Description": "Avisa a Luma de la ventana activa para activar el Modo Juego automáticamente",
+    "Authors": [{ "Name": "Luma OS" }],
+    "License": "GPL-2.0-or-later",
+    "Version": "0.1",
+    "EnabledByDefault": true
+  },
+  "X-Plasma-API": "javascript",
+  "X-Plasma-MainScript": "code/main.js"
+}

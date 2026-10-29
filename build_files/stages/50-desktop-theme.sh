@@ -45,6 +45,8 @@ kw kwinrc --group Plugins --key fadeEnabled false
 kw kwinrc --group Effect-scale --key Duration 260
 kw kwinrc --group Effect-scale --key InScale 0.92
 kw kwinrc --group Effect-scale --key OutScale 0.96
+# Script que avisa al Modo Juego de la ventana activa
+kw kwinrc --group Plugins --key lumagamewatchEnabled true
 # Minimizar: «lámpara mágica», al estilo de macOS
 kw kwinrc --group Plugins --key magiclampEnabled true
 kw kwinrc --group Plugins --key squashEnabled false

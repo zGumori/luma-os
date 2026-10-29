@@ -27,9 +27,15 @@ jobs:
       - name: ShellCheck
         run: |
           shellcheck --version
-          shellcheck -x build_files/build.sh build_files/stages/*.sh system_files/usr/libexec/luma/* system_files/usr/bin/luma-welcome
+          shellcheck -x build_files/build.sh build_files/stages/*.sh system_files/usr/bin/luma-welcome
+          # En libexec conviven scripts de bash y de Python: cada uno con su comprobación
+          for f in system_files/usr/libexec/luma/*; do
+            if head -1 "$f" | grep -q python; then python3 -m py_compile "$f"; else shellcheck -x "$f"; fi
+          done
       - name: Python
         run: python3 -m py_compile system_files/usr/share/luma/welcome/*.py build_files/tools/*.py
+      - name: JavaScript (scripts de KWin)
+        run: for f in system_files/usr/share/kwin/scripts/*/contents/code/*.js; do node --check "$f"; done
 
   build:
     name: Build ${{ matrix.image }}

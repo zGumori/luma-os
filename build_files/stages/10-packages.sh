@@ -10,6 +10,8 @@ INSTALL=(
     libnotify
     # App de bienvenida (Qt/QML desde Python)
     python3-pyside6
+    # Modo Juego (servicio D-Bus en Python)
+    python3-gobject
     # Iconos generados a partir del logo SVG
     librsvg2-tools
     # Personalización del escritorio (Fase 3 — Luma Glass)

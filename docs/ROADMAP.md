@@ -23,10 +23,12 @@
 - [ ] Probar en VM: primer arranque, instalación de flatpaks, bienvenida y atajos
 - [ ] Plymouth con el logo de Luma (requiere regenerar el initramfs)
 
-## Fase 2: Gaming
-- [ ] Perfiles automáticos por juego (GameMode + governor + MangoHud)
+## Fase 2: Gaming ← *en curso*
+- [x] Modo Juego automático (`luma-gamemode` + script de KWin): perfil de rendimiento, «No molestar» y efectos de KWin apagados mientras un juego tiene el foco
+- [x] Overlay de Luma (MangoHud con estilo Luma Glass), oculto por defecto: Mayús derecha + F12
+- [ ] Píldora viva «Jugando» en la Barra Luma
 - [ ] Integración de ProtonDB / AreWeAntiCheatYet en la tienda
-- [ ] Overlay propio (FPS, temperaturas, grabación)
+- [ ] Grabación de partidas con un atajo (gpu-screen-recorder) y píldora de grabación
 
 ## Fase 3: Diseño "Luma Glass" (ver `docs/DESIGN.md`)
 - [x] Lenguaje de diseño documentado: materiales, tokens, componentes, movimiento

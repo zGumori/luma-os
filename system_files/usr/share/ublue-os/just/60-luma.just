@@ -25,3 +25,30 @@ luma-apply-desktop:
     if [[ "${answer,,}" == s* ]]; then
         plasma-apply-lookandfeel --apply org.luma.desktop --resetLayout
     fi
+
+# Activa o desactiva el overlay de rendimiento de Luma (en los juegos: Mayús derecha + F12)
+[group('Luma')]
+luma-overlay:
+    #!/usr/bin/bash
+    conf="${XDG_CONFIG_HOME:-$HOME/.config}/environment.d/60-luma-mangohud.conf"
+    if [[ -f "$conf" ]] && grep -q '^MANGOHUD=0' "$conf"; then
+        rm -f "$conf"
+        echo "Overlay de Luma activado. Cierra sesión y vuelve a entrar para aplicarlo."
+    else
+        mkdir -p "$(dirname "$conf")"
+        printf 'MANGOHUD=0\n' > "$conf"
+        echo "Overlay de Luma desactivado. Cierra sesión y vuelve a entrar para aplicarlo."
+    fi
+
+# Muestra si el Modo Juego está activo y sus últimos mensajes
+[group('Luma')]
+luma-gamemode:
+    #!/usr/bin/bash
+    if busctl --user get-property org.luma.GameMode /org/luma/GameMode org.luma.GameMode Active 2>/dev/null | grep -q true; then
+        echo "Modo Juego: ACTIVO"
+    else
+        echo "Modo Juego: inactivo"
+    fi
+    echo "Juegos propios: ~/.config/luma/juegos.txt · Excluidos: ~/.config/luma/no-juegos.txt"
+    echo
+    journalctl --user -u luma-gamemode -n 15 --no-pager -o cat

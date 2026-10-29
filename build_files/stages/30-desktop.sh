@@ -16,3 +16,6 @@ systemctl --global enable luma-gpu-check.service
 
 # Apps Flatpak por defecto en el primer arranque
 systemctl enable luma-flatpak-setup.service
+
+# Modo Juego automático (servicio de usuario + script de KWin que le avisa)
+systemctl --global enable luma-gamemode.service

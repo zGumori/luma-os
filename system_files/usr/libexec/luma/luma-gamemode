@@ -1,0 +1,240 @@
+#!/usr/bin/python3
+"""Modo Juego de Luma: se activa solo cuando un juego tiene el foco.
+
+Servicio de usuario en el bus de sesión (org.luma.GameMode). El script de KWin
+«lumagamewatch» le avisa de cada ventana activa; aquí se decide si es un juego y:
+  - se mantiene el perfil de energía «performance» (HoldProfile, se libera al salir),
+  - se silencian las notificaciones (la píldora «No molestar» se enciende sola),
+  - se descargan los efectos pesados de KWin (desenfoque, animaciones).
+Al salir del juego (tras unos segundos sin foco, para no parpadear con Alt+Tab) todo
+vuelve a como estaba.
+
+Listas propias (una clase de ventana por línea):
+  ~/.config/luma/juegos.txt      → tratar siempre como juego
+  ~/.config/luma/no-juegos.txt   → no tratar nunca como juego
+"""
+
+import os
+import sys
+from pathlib import Path
+
+NAME = "org.luma.GameMode"
+PATH = "/org/luma/GameMode"
+EXIT_DELAY_MS = 3000
+
+# Efectos de KWin que se apagan durante el juego (solo se restauran los que estaban cargados)
+HEAVY_EFFECTS = ["blur", "contrast", "scale", "magiclamp", "slidingpopups"]
+
+# Variables de entorno que delatan a un juego lanzado desde una tienda
+GAME_ENV = ("SteamAppId", "SteamGameId", "STEAM_COMPAT_APP_ID", "LUTRIS_GAME_UUID", "HEROIC_APP_NAME")
+NOT_GAMES = {"steam", "steamwebhelper", "lutris", "heroic", "bottles", "com.usebottles.bottles",
+             "org.kde.plasmashell", "plasmashell", "krunner", "org.kde.krunner"}
+
+CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "luma"
+
+
+def read_list(name):
+    try:
+        return {line.strip().lower() for line in (CONFIG / name).read_text().splitlines()
+                if line.strip() and not line.startswith("#")}
+    except OSError:
+        return set()
+
+
+def process_env(pid):
+    try:
+        raw = Path(f"/proc/{pid}/environ").read_bytes()
+    except (OSError, ValueError):
+        return {}
+    env = {}
+    for item in raw.split(b"\0"):
+        key, _, value = item.partition(b"=")
+        env[key.decode(errors="ignore")] = value.decode(errors="ignore")
+    return env
+
+
+def parent_pid(pid):
+    try:
+        for line in Path(f"/proc/{pid}/status").read_text().splitlines():
+            if line.startswith("PPid:"):
+                return int(line.split()[1])
+    except (OSError, ValueError):
+        pass
+    return 0
+
+
+def launched_as_game(pid, depth=4):
+    """¿El proceso (o alguno de sus padres cercanos) lo lanzó una tienda de juegos?"""
+    while pid > 1 and depth > 0:
+        env = process_env(pid)
+        for key in GAME_ENV:
+            value = env.get(key, "")
+            if value and value != "0":
+                return True
+        pid = parent_pid(pid)
+        depth -= 1
+    return False
+
+
+def is_game(resource_class, resource_name, fullscreen, pid, env_check=launched_as_game):
+    cls, name = resource_class.lower(), resource_name.lower()
+    if cls in read_list("no-juegos.txt") or cls in NOT_GAMES:
+        return False
+    if cls in read_list("juegos.txt"):
+        return True
+    if cls.startswith("steam_app_") or cls == "gamescope":
+        return True
+    if fullscreen and (cls.endswith(".exe") or name.endswith(".exe")):
+        return True
+    return pid > 0 and env_check(pid)
+
+
+class GameMode:
+    """Activa y desactiva el Modo Juego hablando con D-Bus (power-profiles, notificaciones, KWin)."""
+
+    def __init__(self, gio, glib):
+        self.Gio, self.GLib = gio, glib
+        self.session = gio.bus_get_sync(gio.BusType.SESSION)
+        try:
+            self.system = gio.bus_get_sync(gio.BusType.SYSTEM)
+        except Exception:  # noqa: BLE001
+            self.system = None
+        self.active = False
+        self.title = ""
+        self.profile_cookie = None
+        self.notify_cookie = None
+        self.unloaded = []
+        self.exit_timer = 0
+        self.connection = None
+
+    def call(self, bus, service, path, iface, method, args, reply):
+        try:
+            result = bus.call_sync(service, path, iface, method, args,
+                                   self.GLib.VariantType(reply) if reply else None,
+                                   self.Gio.DBusCallFlags.NONE, 3000, None)
+            return result.unpack() if result else None
+        except Exception as error:  # noqa: BLE001
+            print(f"Aviso: {service}.{method}: {error}", flush=True)
+            return None
+
+    def enter(self, title):
+        V = self.GLib.Variant
+        self.active, self.title = True, title
+        print(f"Modo Juego activado: {title}", flush=True)
+        if self.system:
+            r = self.call(self.system, "net.hadess.PowerProfiles", "/net/hadess/PowerProfiles",
+                          "net.hadess.PowerProfiles", "HoldProfile",
+                          V("(sss)", ("performance", "Juego en marcha", NAME)), "(u)")
+            self.profile_cookie = r[0] if r else None
+        r = self.call(self.session, "org.freedesktop.Notifications", "/org/freedesktop/Notifications",
+                      "org.freedesktop.Notifications", "Inhibit",
+                      V("(ssa{sv})", ("org.luma.GameMode", "Jugando", {})), "(u)")
+        self.notify_cookie = r[0] if r else None
+        self.unloaded = []
+        for effect in HEAVY_EFFECTS:
+            loaded = self.call(self.session, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects",
+                               "isEffectLoaded", V("(s)", (effect,)), "(b)")
+            if loaded and loaded[0]:
+                self.call(self.session, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects",
+                          "unloadEffect", V("(s)", (effect,)), None)
+                self.unloaded.append(effect)
+        self.emit()
+
+    def leave(self):
+        V = self.GLib.Variant
+        print("Modo Juego desactivado", flush=True)
+        if self.system and self.profile_cookie is not None:
+            self.call(self.system, "net.hadess.PowerProfiles", "/net/hadess/PowerProfiles",
+                      "net.hadess.PowerProfiles", "ReleaseProfile", V("(u)", (self.profile_cookie,)), None)
+        if self.notify_cookie is not None:
+            self.call(self.session, "org.freedesktop.Notifications", "/org/freedesktop/Notifications",
+                      "org.freedesktop.Notifications", "UnInhibit", V("(u)", (self.notify_cookie,)), None)
+        for effect in self.unloaded:
+            self.call(self.session, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects",
+                      "loadEffect", V("(s)", (effect,)), None)
+        self.active, self.title = False, ""
+        self.profile_cookie = self.notify_cookie = None
+        self.unloaded = []
+        self.emit()
+
+    def window_activated(self, resource_class, resource_name, caption, fullscreen, pid):
+        try:
+            pid = int(pid)
+        except ValueError:
+            pid = 0
+        if is_game(resource_class, resource_name, fullscreen, pid):
+            if self.exit_timer:
+                self.GLib.source_remove(self.exit_timer)
+                self.exit_timer = 0
+            if not self.active:
+                self.enter(caption or resource_class)
+        elif self.active and not self.exit_timer:
+            self.exit_timer = self.GLib.timeout_add(EXIT_DELAY_MS, self._exit_timeout)
+
+    def _exit_timeout(self):
+        self.exit_timer = 0
+        if self.active:
+            self.leave()
+        return False
+
+    def emit(self):
+        if self.connection:
+            self.connection.emit_signal(None, PATH, NAME, "ActiveChanged",
+                                        self.GLib.Variant("(bs)", (self.active, self.title)))
+
+
+INTERFACE = f"""
+<node>
+  <interface name="{NAME}">
+    <method name="WindowActivated">
+      <arg type="s" name="resourceClass" direction="in"/>
+      <arg type="s" name="resourceName" direction="in"/>
+      <arg type="s" name="caption" direction="in"/>
+      <arg type="b" name="fullscreen" direction="in"/>
+      <arg type="s" name="pid" direction="in"/>
+    </method>
+    <property name="Active" type="b" access="read"/>
+    <property name="Title" type="s" access="read"/>
+    <signal name="ActiveChanged">
+      <arg type="b" name="active"/>
+      <arg type="s" name="title"/>
+    </signal>
+  </interface>
+</node>
+"""
+
+
+def main():
+    from gi.repository import Gio, GLib
+
+    mode = GameMode(Gio, GLib)
+    node = Gio.DBusNodeInfo.new_for_xml(INTERFACE)
+
+    def on_call(_conn, _sender, _path, _iface, method, params, invocation):
+        if method == "WindowActivated":
+            mode.window_activated(*params.unpack())
+        invocation.return_value(None)
+
+    def on_get(_conn, _sender, _path, _iface, prop):
+        return GLib.Variant("b", mode.active) if prop == "Active" else GLib.Variant("s", mode.title)
+
+    def on_bus(conn, _name):
+        mode.connection = conn
+        conn.register_object(PATH, node.interfaces[0], on_call, on_get, None)
+
+    loop = GLib.MainLoop()
+
+    def on_lost(*_args):
+        print("Otro luma-gamemode ya está en marcha.", flush=True)
+        loop.quit()
+
+    Gio.bus_own_name(Gio.BusType.SESSION, NAME, Gio.BusNameOwnerFlags.NONE, on_bus, None, on_lost)
+    try:
+        loop.run()
+    finally:
+        if mode.active:
+            mode.leave()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
