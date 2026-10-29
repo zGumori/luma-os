@@ -16,12 +16,22 @@ kwriteconfig6 --file /etc/xdg/kcminputrc --group Mouse --key cursorSize 32
 # El tema está en /usr/share/sddm/themes/luma y se activa en /etc/sddm.conf.d/99-luma.conf
 ls /etc/sddm.conf.d/ || true
 
-# ---------- Diagnóstico de la pantalla de bloqueo ----------
-# Plasma ha movido su pantalla de bloqueo entre versiones; esto deja en el log del build
-# qué versión hay y dónde están sus QML, para diseñar la de Luma sobre la estructura real.
+# ---------- Pantalla de bloqueo ----------
+# En Plasma 6.7 vive en el paquete de la shell. Solo se cambia el reloj (LumaClock.qml, misma
+# interfaz que el de Breeze): la autenticación no se toca. Si Plasma cambia la estructura,
+# se deja el reloj de Breeze. Si algo fallase, kscreenlocker usa su tema de respaldo.
 rpm -q plasma-workspace kscreenlocker plasma-desktop || true
-find /usr/share/plasma /usr/share/kscreenlocker /usr/lib64/qt6/qml/org/kde -ipath '*lock*' -name '*.qml' 2>/dev/null | head -60 || true
-find /usr/share/plasma/look-and-feel -maxdepth 3 -type d 2>/dev/null | head -40 || true
+LOCK=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen
+if [[ -f "${LOCK}/LockScreenUi.qml" ]] && [[ "$(grep -cE '^\s*Clock \{' "${LOCK}/LockScreenUi.qml")" == 1 ]]; then
+    cp /usr/share/luma/lockscreen/LumaClock.qml "${LOCK}/LumaClock.qml"
+    sed -i -E 's/^(\s*)Clock \{/\1LumaClock {/' "${LOCK}/LockScreenUi.qml"
+    if [[ -f "${LOCK}/qmldir" ]]; then
+        echo "LumaClock 1.0 LumaClock.qml" >> "${LOCK}/qmldir"
+    fi
+    echo "Pantalla de bloqueo: reloj de Luma aplicado"
+else
+    echo "Aviso: estructura de LockScreenUi.qml desconocida; se mantiene el reloj de Breeze"
+fi
 
 # ---------- Arranque (Plymouth) ----------
 SPINNER=/usr/share/plymouth/themes/spinner

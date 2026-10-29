@@ -24,9 +24,9 @@ kw kdeglobals --group General --key menuFont "DM Sans,10,-1,5,400,0,0,0,0,0,0,0,
 kw kdeglobals --group General --key toolBarFont "DM Sans,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
 kw kdeglobals --group General --key smallestReadableFont "DM Sans,8,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
 kw kdeglobals --group WM --key activeFont "DM Sans,10,-1,5,600,0,0,0,0,0,0,0,0,0,0,1"
-# Pantalla de bloqueo con el fondo de Luma
+# Pantalla de bloqueo con el fondo de Luma (siempre la versión oscura, como el inicio de sesión)
 kw kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General \
-    --key Image "file:///usr/share/wallpapers/Luma/"
+    --key Image "file:///usr/share/wallpapers/Luma/contents/images_dark/3840x2160.jpg"
 # Decoración de ventana Luma (Aurorae) con los controles agrupados a la derecha
 kw kwinrc --group org.kde.kdecoration2 --key library org.kde.kwin.aurorae
 kw kwinrc --group org.kde.kdecoration2 --key theme __aurorae__svg__Luma

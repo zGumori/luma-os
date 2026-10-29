@@ -37,13 +37,20 @@ def corner_paths(kind, r):
     }[kind]
 
 
-def frame_svg(r, opacity, margins, prefixes=("",), border=0.10, highlight=0.18):
-    """SVG de marco de 9 piezas, con versión de máscara (para el desenfoque de KWin)."""
+def frame_svg(r, opacity, margins, prefixes=("",), border=0.10, highlight=0.18, variants=None):
+    """SVG de marco de 9 piezas, con versión de máscara (para el desenfoque de KWin).
+
+    variants: lista opcional de (prefijo, relleno, opacidad, color del filo, alfa del filo, alfa del brillo)
+    para marcos con estados (normal, hover, foco…). Por defecto, cristal oscuro para cada prefijo.
+    """
     parts = []
     y = 0
-    for prefix in list(prefixes) + ["mask-"]:
+    if variants is None:
+        variants = [(prefix, NIGHT, opacity, "#FFFFFF", border, highlight) for prefix in prefixes]
+    for prefix, fill_color, fill_opacity, line_color, border, highlight in list(variants) + [
+            ("mask-", "#000000", 1, "#FFFFFF", 0, 0)]:
         is_mask = prefix == "mask-"
-        fill = f'fill="{NIGHT if not is_mask else "#000000"}" fill-opacity="{1 if is_mask else opacity}"'
+        fill = f'fill="{fill_color}" fill-opacity="{fill_opacity}"'
         cells = {
             "topleft": (0, 0, r, r), "top": (r + 2, 0, EDGE, r), "topright": (r + EDGE + 4, 0, r, r),
             "left": (0, r + 2, r, EDGE), "center": (r + 2, r + 2, EDGE, EDGE), "right": (r + EDGE + 4, r + 2, r, EDGE),
@@ -58,7 +65,7 @@ def frame_svg(r, opacity, margins, prefixes=("",), border=0.10, highlight=0.18):
                 body.append(f'<path d="{fill_d}" {fill}/>')
                 if not is_mask:
                     alpha = highlight if name.startswith("top") else border
-                    body.append(f'<path d="{ring_d}" fill="#FFFFFF" fill-opacity="{alpha}"/>')
+                    body.append(f'<path d="{ring_d}" fill="{line_color}" fill-opacity="{alpha}"/>')
             else:
                 body.append(f'<rect x="0" y="0" width="{w}" height="{h}" {fill}/>')
                 if not is_mask:
@@ -68,7 +75,7 @@ def frame_svg(r, opacity, margins, prefixes=("",), border=0.10, highlight=0.18):
                     }.get(name)
                     if line:
                         lx, ly, lw, lh, alpha = line
-                        body.append(f'<rect x="{lx}" y="{ly}" width="{lw}" height="{lh}" fill="#FFFFFF" fill-opacity="{alpha}"/>')
+                        body.append(f'<rect x="{lx}" y="{ly}" width="{lw}" height="{lh}" fill="{line_color}" fill-opacity="{alpha}"/>')
             parts.append(f'  <g id="{prefix}{name}" transform="translate({ox},{oy})">' + "".join(body) + "</g>")
         y += 2 * r + EDGE + 8
     # Márgenes del contenido (independientes del radio de las esquinas)
@@ -147,6 +154,14 @@ def main():
     (THEME / "dialogs").mkdir(parents=True, exist_ok=True)
     (THEME / "widgets" / "panel-background.svg").write_text(frame_svg(16, 0.62, (5, 5, 10, 10)), encoding="utf-8", newline="\n")
     (THEME / "dialogs" / "background.svg").write_text(frame_svg(18, 0.80, (12, 12, 12, 12)), encoding="utf-8", newline="\n")
+    # Campos de texto en píldora de cristal oscuro (bloqueo, lanzador, búsquedas)
+    lineedit = [
+        ("base-", NIGHT, 0.55, "#FFFFFF", 0.16, 0.22),
+        ("hover-", NIGHT, 0.0, "#FFFFFF", 0.32, 0.36),
+        ("focus-", NIGHT, 0.0, "#2F7BFF", 0.95, 0.95),
+    ]
+    (THEME / "widgets" / "lineedit.svg").write_text(
+        frame_svg(16, 0, (6, 6, 16, 16), variants=lineedit), encoding="utf-8", newline="\n")
     (THEME / "widgets" / "tooltip.svg").write_text(frame_svg(12, 0.86, (8, 8, 10, 10)), encoding="utf-8", newline="\n")
     (THEME / "colors").write_text(COLORS, encoding="utf-8", newline="\n")
     (THEME / "plasmarc").write_text(PLASMARC, encoding="utf-8", newline="\n")

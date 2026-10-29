@@ -43,7 +43,7 @@
 - [ ] Instalador (Anaconda) con la marca de Luma en lugar de la de Fedora
 - [x] Arranque (Plymouth) con la marca de Luma (initramfs regenerado en el build)
 - [x] Inicio de sesión (SDDM) «luma»: reloj, avatar y contraseña en píldora de cristal
-- [ ] Pantalla de bloqueo de Plasma con el mismo diseño que el inicio de sesión
+- [x] Pantalla de bloqueo: reloj de Luma (LumaClock), fondo oscuro y campo de contraseña en píldora
 - [x] Cursor «Luma Pointer» (flecha, mano, texto, espera y progreso animados)
 - [x] Animaciones de KWin: abrir/cerrar con escala (Scale), minimizar con lámpara mágica, desenfoque más intenso
 - [ ] Iconos y sonidos de Luma
