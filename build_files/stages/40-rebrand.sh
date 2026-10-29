@@ -65,7 +65,7 @@ while read -r logo; do
     replace_logo "${logo}"
 done < <(find /usr/share/icons/hicolor /usr/share/pixmaps /usr/share/plasma/look-and-feel \
     \( -iname 'bazzite*logo*' -o -iname 'distributor-logo*' -o -iname 'fedora*logo*' \
-       -o -iname 'system-logo*' -o -iname 'steamdeck*.svg' \) \
+       -o -iname 'system-logo*' -o -path '*/places/steamdeck*.svg' \) \
     \( -name '*.svg' -o -name '*.svgz' -o -name '*.png' \) -type f 2>/dev/null)
 
 gtk-update-icon-cache -f /usr/share/icons/hicolor || true
