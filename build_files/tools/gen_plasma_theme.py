@@ -37,11 +37,14 @@ def corner_paths(kind, r):
     }[kind]
 
 
-def frame_svg(r, opacity, margins, prefixes=("",), border=0.10, highlight=0.18, variants=None):
+def frame_svg(r, opacity, margins, prefixes=("",), border=0.10, highlight=0.18, variants=None, overlays=()):
     """SVG de marco de 9 piezas, con versión de máscara (para el desenfoque de KWin).
 
     variants: lista opcional de (prefijo, relleno, opacidad, color del filo, alfa del filo, alfa del brillo)
     para marcos con estados (normal, hover, foco…). Por defecto, cristal oscuro para cada prefijo.
+    overlays: prefijos que Plasma dibuja encima del marco base, agrandados hacia fuera según sus
+    propios márgenes (hover y foco de los campos de texto). Se les da 1 px para que el filo
+    coincida con el borde del campo; sin estos márgenes Plasma usa el tamaño de la esquina.
     """
     parts = []
     y = 0
@@ -86,6 +89,17 @@ def frame_svg(r, opacity, margins, prefixes=("",), border=0.10, highlight=0.18, 
         f'  <rect id="hint-left-margin" x="4" y="{y}" width="{left}" height="1" fill="none"/>',
         f'  <rect id="hint-right-margin" x="4" y="{y + 2}" width="{right}" height="1" fill="none"/>',
     ]
+    for prefix in overlays:
+        y += 4
+        hints += [
+            f'  <rect id="{prefix}hint-top-margin" x="0" y="{y}" width="1" height="1" fill="none"/>',
+            f'  <rect id="{prefix}hint-bottom-margin" x="2" y="{y}" width="1" height="1" fill="none"/>',
+            f'  <rect id="{prefix}hint-left-margin" x="4" y="{y}" width="1" height="1" fill="none"/>',
+            f'  <rect id="{prefix}hint-right-margin" x="6" y="{y}" width="1" height="1" fill="none"/>',
+        ]
+    if overlays:
+        # El filo de hover/foco se dibuja por encima del campo, no detrás
+        hints.append(f'  <rect id="hint-focus-over-base" x="8" y="{y}" width="1" height="1" fill="none"/>')
     width = 2 * r + EDGE + 8
     height = y + max(top, bottom) + 4
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">\n'
@@ -161,7 +175,7 @@ def main():
         ("focus-", NIGHT, 0.0, "#2F7BFF", 0.95, 0.95),
     ]
     (THEME / "widgets" / "lineedit.svg").write_text(
-        frame_svg(16, 0, (6, 6, 16, 16), variants=lineedit), encoding="utf-8", newline="\n")
+        frame_svg(16, 0, (6, 6, 16, 16), variants=lineedit, overlays=("hover-", "focus-")), encoding="utf-8", newline="\n")
     (THEME / "widgets" / "tooltip.svg").write_text(frame_svg(12, 0.86, (8, 8, 10, 10)), encoding="utf-8", newline="\n")
     (THEME / "colors").write_text(COLORS, encoding="utf-8", newline="\n")
     (THEME / "plasmarc").write_text(PLASMARC, encoding="utf-8", newline="\n")
