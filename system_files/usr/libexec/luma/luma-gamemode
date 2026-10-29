@@ -9,13 +9,20 @@ Servicio de usuario en el bus de sesión (org.luma.GameMode). El script de KWin
 Al salir del juego (tras unos segundos sin foco, para no parpadear con Alt+Tab) todo
 vuelve a como estaba.
 
+También graba partidas (Meta+Alt+R, método ToggleRecording) con GPU Screen Recorder
+(Flatpak de Flathub), en ~/Vídeos/Partidas. Las píldoras «Jugando» y «Grabando» de la
+Barra Luma leen las propiedades Active, Title, Recording y RecordingSince.
+
 Listas propias (una clase de ventana por línea):
   ~/.config/luma/juegos.txt      → tratar siempre como juego
   ~/.config/luma/no-juegos.txt   → no tratar nunca como juego
 """
 
 import os
+import re
+import signal
 import sys
+import time
 from pathlib import Path
 
 NAME = "org.luma.GameMode"
@@ -29,6 +36,9 @@ HEAVY_EFFECTS = ["blur", "contrast", "scale", "magiclamp", "slidingpopups"]
 GAME_ENV = ("SteamAppId", "SteamGameId", "STEAM_COMPAT_APP_ID", "LUTRIS_GAME_UUID", "HEROIC_APP_NAME")
 NOT_GAMES = {"steam", "steamwebhelper", "lutris", "heroic", "bottles", "com.usebottles.bottles",
              "org.kde.plasmashell", "plasmashell", "krunner", "org.kde.krunner"}
+
+RECORDER_APP = "com.dec05eba.gpu_screen_recorder"
+RECORDER_COMM = "gpu-screen-reco"  # nombre del proceso en /proc (recortado a 15 caracteres)
 
 CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "luma"
 
@@ -63,6 +73,13 @@ def parent_pid(pid):
     return 0
 
 
+def process_name(pid):
+    try:
+        return Path(f"/proc/{pid}/comm").read_text().strip()
+    except OSError:
+        return ""
+
+
 def launched_as_game(pid, depth=4):
     """¿El proceso (o alguno de sus padres cercanos) lo lanzó una tienda de juegos?"""
     while pid > 1 and depth > 0:
@@ -74,6 +91,30 @@ def launched_as_game(pid, depth=4):
         pid = parent_pid(pid)
         depth -= 1
     return False
+
+
+def child_pids(pid):
+    """Todos los descendientes de un proceso (los procesos del sandbox de Flatpak se ven desde fuera)."""
+    parents = {}
+    for status in Path("/proc").glob("[0-9]*/status"):
+        try:
+            ppid = next(int(line.split()[1]) for line in status.read_text().splitlines() if line.startswith("PPid:"))
+        except (OSError, ValueError, StopIteration):
+            continue
+        parents.setdefault(ppid, []).append(int(status.parent.name))
+    found, pending = [], [pid]
+    while pending:
+        for child in parents.get(pending.pop(), []):
+            found.append(child)
+            pending.append(child)
+    return found
+
+
+def recording_name(title, now=None):
+    """Nombre del vídeo: el del juego (si lo hay) y la fecha, sin caracteres problemáticos."""
+    stamp = time.strftime("%Y-%m-%d %H-%M-%S", time.localtime(now))
+    clean = " ".join(re.sub(r'[\\/:*?"<>|\x00-\x1f]+', " ", title).split()).strip(" .")[:60].strip()
+    return f"{clean or 'Partida'} {stamp}.mp4"
 
 
 def is_game(resource_class, resource_name, fullscreen, pid, env_check=launched_as_game):
@@ -106,6 +147,9 @@ class GameMode:
         self.unloaded = []
         self.exit_timer = 0
         self.connection = None
+        self.recorder = None
+        self.recording_since = 0
+        self.recording_file = None
 
     def call(self, bus, service, path, iface, method, args, reply):
         try:
@@ -181,11 +225,96 @@ class GameMode:
         if self.connection:
             self.connection.emit_signal(None, PATH, NAME, "ActiveChanged",
                                         self.GLib.Variant("(bs)", (self.active, self.title)))
+        self.properties_changed()
+
+    def properties(self):
+        V = self.GLib.Variant
+        return {
+            "Active": V("b", self.active),
+            "Title": V("s", self.title),
+            "Recording": V("b", self.recorder is not None),
+            "RecordingSince": V("x", self.recording_since),
+        }
+
+    def properties_changed(self):
+        if self.connection:
+            self.connection.emit_signal(None, PATH, "org.freedesktop.DBus.Properties", "PropertiesChanged",
+                                        self.GLib.Variant("(sa{sv}as)", (NAME, self.properties(), [])))
+
+    def notify(self, summary, body, critical=False):
+        V = self.GLib.Variant
+        hints = {"urgency": V("y", 2 if critical else 1), "desktop-entry": V("s", "luma-record")}
+        self.call(self.session, "org.freedesktop.Notifications", "/org/freedesktop/Notifications",
+                  "org.freedesktop.Notifications", "Notify",
+                  V("(susssasa{sv}i)", ("Luma", 0, "media-record", summary, body, [], hints, 6000)), "(u)")
+
+    # --- Grabación de partidas ---
+
+    def toggle_recording(self):
+        if self.recorder is None:
+            self.start_recording()
+        else:
+            self.stop_recording()
+
+    def start_recording(self):
+        videos = self.GLib.get_user_special_dir(self.GLib.UserDirectory.DIRECTORY_VIDEOS) or str(Path.home() / "Vídeos")
+        folder = Path(videos) / "Partidas"
+        folder.mkdir(parents=True, exist_ok=True)
+        self.recording_file = folder / recording_name(self.title)
+        # Captura por el portal: la primera vez KDE pregunta qué pantalla grabar y se recuerda
+        argv = ["flatpak", "run", "--command=gpu-screen-recorder", RECORDER_APP,
+                "-w", "portal", "-restore-portal-session", "yes",
+                "-f", "60", "-a", "default_output", "-o", str(self.recording_file)]
+        try:
+            self.recorder = self.Gio.Subprocess.new(argv, self.Gio.SubprocessFlags.NONE)
+        except Exception as error:  # noqa: BLE001
+            print(f"No se pudo iniciar la grabación: {error}", flush=True)
+            self.recorder = None
+            self.notify("No se pudo grabar", "Falta GPU Screen Recorder. Instálalo desde Discover.", critical=True)
+            return
+        self.recording_since = int(time.time() * 1000)
+        print(f"Grabando en {self.recording_file}", flush=True)
+        self.recorder.wait_async(None, self._recorder_finished, self.recorder)
+        self.properties_changed()
+
+    def stop_recording(self):
+        if self.recorder is None:
+            return
+        # SIGINT al grabador (dentro del sandbox) para que cierre el vídeo correctamente
+        pid = int(self.recorder.get_identifier() or 0)
+        targets = [p for p in child_pids(pid) if process_name(p) == RECORDER_COMM] if pid else []
+        for target in targets or [pid]:
+            try:
+                os.kill(target, signal.SIGINT)
+            except OSError:
+                pass
+
+    def _recorder_finished(self, process, result, recorder):
+        try:
+            process.wait_finish(result)
+        except Exception:  # noqa: BLE001
+            pass
+        if recorder is not self.recorder:
+            return
+        duration = time.time() - self.recording_since / 1000
+        saved = self.recording_file
+        self.recorder, self.recording_since, self.recording_file = None, 0, None
+        self.properties_changed()
+        if saved and saved.exists() and saved.stat().st_size > 0:
+            print(f"Grabación guardada: {saved}", flush=True)
+            self.notify("Partida grabada", f"Guardada en {saved.parent.name}/{saved.name}")
+        else:
+            print(f"La grabación terminó sin vídeo (código {process.get_exit_status()})", flush=True)
+            if duration < 15:
+                self.notify("No se pudo grabar",
+                            "Comprueba que GPU Screen Recorder está instalado y que has elegido una pantalla.",
+                            critical=True)
 
 
 INTERFACE = f"""
 <node>
   <interface name="{NAME}">
+    <method name="ToggleRecording"/>
     <method name="WindowActivated">
       <arg type="s" name="resourceClass" direction="in"/>
       <arg type="s" name="resourceName" direction="in"/>
@@ -195,6 +324,8 @@ INTERFACE = f"""
     </method>
     <property name="Active" type="b" access="read"/>
     <property name="Title" type="s" access="read"/>
+    <property name="Recording" type="b" access="read"/>
+    <property name="RecordingSince" type="x" access="read"/>
     <signal name="ActiveChanged">
       <arg type="b" name="active"/>
       <arg type="s" name="title"/>
@@ -213,10 +344,12 @@ def main():
     def on_call(_conn, _sender, _path, _iface, method, params, invocation):
         if method == "WindowActivated":
             mode.window_activated(*params.unpack())
+        elif method == "ToggleRecording":
+            mode.toggle_recording()
         invocation.return_value(None)
 
     def on_get(_conn, _sender, _path, _iface, prop):
-        return GLib.Variant("b", mode.active) if prop == "Active" else GLib.Variant("s", mode.title)
+        return mode.properties().get(prop)
 
     def on_bus(conn, _name):
         mode.connection = conn
@@ -232,6 +365,7 @@ def main():
     try:
         loop.run()
     finally:
+        mode.stop_recording()
         if mode.active:
             mode.leave()
 

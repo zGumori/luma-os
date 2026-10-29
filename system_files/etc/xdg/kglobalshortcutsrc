@@ -12,6 +12,7 @@ _launch=Meta+E
 # Captura de una región (Win+Shift+S)
 [services][org.kde.spectacle.desktop]
 RectangularRegionScreenShot=Meta+Shift+S
+RecordScreen=none
 
 # Administrador de tareas (Ctrl+Shift+Esc)
 [services][org.kde.plasma-systemmonitor.desktop]
@@ -20,3 +21,8 @@ _launch=Ctrl+Shift+Esc
 # Terminal (Ctrl+Alt+T)
 [services][org.kde.konsole.desktop]
 _launch=Ctrl+Alt+T
+
+# Grabar partida (Win+Alt+R, como la Barra de juegos de Windows). Sustituye al atajo
+# de grabación de pantalla de Spectacle, que usaba la misma combinación.
+[services][luma-record.desktop]
+_launch=Meta+Alt+R

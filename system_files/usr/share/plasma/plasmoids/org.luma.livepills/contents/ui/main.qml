@@ -25,7 +25,7 @@ PlasmoidItem {
             spacing: 8
 
             Repeater {
-                model: ["MediaPill.qml", "DndPill.qml"]
+                model: ["RecordPill.qml", "GamePill.qml", "MediaPill.qml", "DndPill.qml"]
                 delegate: Loader {
                     required property string modelData
                     source: modelData

@@ -11,3 +11,6 @@ com.vysp3r.ProtonPlus
 
 # Apps de Windows (.exe)
 com.usebottles.bottles
+
+# Grabación de partidas (Meta+Alt+R)
+com.dec05eba.gpu_screen_recorder

@@ -26,9 +26,10 @@
 ## Fase 2: Gaming ← *en curso*
 - [x] Modo Juego automático (`luma-gamemode` + script de KWin): perfil de rendimiento, «No molestar» y efectos de KWin apagados mientras un juego tiene el foco
 - [x] Overlay de Luma (MangoHud con estilo Luma Glass), oculto por defecto: Mayús derecha + F12
-- [ ] Píldora viva «Jugando» en la Barra Luma
+- [x] Píldora viva «Jugando» en la Barra Luma (lee el estado de `org.luma.GameMode` por D-Bus)
+- [x] Grabación de partidas con Meta+Alt+R (GPU Screen Recorder de Flathub) en `~/Vídeos/Partidas`, con píldora «Grabando» (clic = detener)
+- [ ] Repetición instantánea: guardar los últimos 30 segundos con un atajo
 - [ ] Integración de ProtonDB / AreWeAntiCheatYet en la tienda
-- [ ] Grabación de partidas con un atajo (gpu-screen-recorder) y píldora de grabación
 
 ## Fase 3: Diseño "Luma Glass" (ver `docs/DESIGN.md`)
 - [x] Lenguaje de diseño documentado: materiales, tokens, componentes, movimiento
@@ -39,7 +40,7 @@
 - [x] Estilo de Plasma «Luma» (cristal oscuro: barra, menús, avisos)
 - [x] Tema global `org.luma.desktop` + Barra Luma flotante para usuarios nuevos (`ujust luma-apply-desktop` para los existentes)
 - [x] Píldoras vivas (plasmoide `org.luma.livepills`): música con carátula y «No molestar»
-- [ ] Más píldoras vivas: temporizador, grabación de pantalla, descargas; estado agrupado (wifi/volumen/batería)
+- [ ] Más píldoras vivas: temporizador, descargas; estado agrupado (wifi/volumen/batería)
 - [x] Decoración de ventana Luma / Luma Oscuro (Aurorae) con controles agrupados en una píldora
 - [ ] Cristal claro en el contenido de las ventanas (Kvantum + desenfoque forzado)
 - [ ] Instalador (Anaconda) con la marca de Luma en lugar de la de Fedora

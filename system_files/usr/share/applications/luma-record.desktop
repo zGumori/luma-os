@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Grabar partida
+Comment=Empieza o detiene la grabación de la pantalla (Meta+Alt+R)
+Icon=media-record
+Exec=busctl --user call org.luma.GameMode /org/luma/GameMode org.luma.GameMode ToggleRecording
+NoDisplay=true
+X-KDE-GlobalAccel-CommandShortcut=true
