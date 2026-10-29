@@ -18,6 +18,9 @@ kw kdeglobals --group KDE --key LookAndFeelPackage org.luma.desktop
 kw kdeglobals --group General --key ColorScheme LumaLight
 kw kdeglobals --group General --key AccentColor "47,123,255"
 kw plasmarc --group Theme --key name luma
+# Pantalla de carga al iniciar sesión: la de Luma (no la de Bazzite/Steam Deck)
+kw ksplashrc --group KSplash --key Engine KSplashQML
+kw ksplashrc --group KSplash --key Theme org.luma.desktop
 # Tipografía de la interfaz: DM Sans
 kw kdeglobals --group General --key font "DM Sans,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
 kw kdeglobals --group General --key menuFont "DM Sans,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"

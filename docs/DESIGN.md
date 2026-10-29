@@ -119,7 +119,7 @@ Minimalistas, abstractos y propios de Luma, construidos con la geometría de la 
 Se generan en el build (`build_files/tools/render_wallpapers.py`) con grano fino para evitar bandas. Se usan en el escritorio, el inicio de sesión y la pantalla de bloqueo.
 
 ### Cursor
-**«Luma Pointer»**: punta de flecha sin tallo con muesca en la base, esquinas muy redondeadas, contorno negro grueso, relleno blanco y sombra difuminada. La mano, el texto y los cursores de espera usan el mismo trazo. Tamaño por defecto: 32 px.
+**«Luma Pointer»** (material Luma Glass): flecha de cristal oscuro (degradado `#2B3142` → `#0C0E14` con un reflejo tenue arriba), filo blanco nítido y lados ligeramente cóncavos, como las puntas de la estrella de Luma. Sombra suave dibujada a resolución completa. La mano y el texto usan el mismo material; la espera es la estrella de Luma girando con el degradado azul → violeta, y el progreso añade esa estrella pequeña junto a la flecha. Se lee igual de bien sobre fondos claros y oscuros. Tamaño por defecto: 32 px.
 
 ## Logo
 
@@ -137,6 +137,6 @@ Se generan en el build (`build_files/tools/render_wallpapers.py`) con grano fino
 | Cristal claro en ventanas | Tema Kvantum traslúcido + efecto de desenfoque forzado (Better Blur) para apps de Luma |
 | Controles de ventana | Decoración de ventana propia (KDecoration) con botones en píldora |
 | Animaciones | Efectos de KWin en QML/JS: abrir/cerrar con escala y desenfoque |
-| Cursor | Tema de cursor generado desde SVG (xcursorgen) en el build |
+| Cursor | Tema Xcursor generado en el build con `build_files/tools/render_cursors.py` |
 | Bloqueo e inicio de sesión | Look-and-feel de Plasma + tema SDDM en QML |
 | Apps propias (Bienvenida, Luma Center) | PySide6 + QML usando estos tokens directamente |

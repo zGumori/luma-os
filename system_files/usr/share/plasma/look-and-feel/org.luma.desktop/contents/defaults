@@ -28,3 +28,7 @@ library=org.kde.kwin.aurorae
 theme=__aurorae__svg__Luma
 ButtonsOnLeft=
 ButtonsOnRight=IAX
+
+[ksplashrc][KSplash]
+Engine=KSplashQML
+Theme=org.luma.desktop

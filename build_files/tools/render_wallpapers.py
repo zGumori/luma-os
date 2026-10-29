@@ -20,12 +20,12 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtCore import QPointF, Qt  # noqa: E402
 from PySide6.QtGui import (  # noqa: E402
-    QBrush, QColor, QGuiApplication, QImage, QLinearGradient, QPainter, QPainterPath, QRadialGradient,
+    QBrush, QColor, QGuiApplication, QImage, QLinearGradient, QPainter, QPainterPath, QPen, QRadialGradient,
 )
 
 PALETTES = {
     False: dict(  # claro: azul sobre blanco cálido
-        bg=("#F6F4F0", "#ECEAE4"), glow="#5B8CFF", glow_alpha=150,
+        bg=("#F6F4F0", "#ECEAE4"), glow="#5B8CFF", glow_alpha=120,
         stops=[(0, "#DCEBFF"), (0.4, "#7FB0FF"), (0.75, "#2F6BFF"), (1, "#5B3BE0")], small="#1A1D29"),
     True: dict(  # oscuro: luz cálida de naranja a magenta sobre negro
         bg=("#07080D", "#0B0C14"), glow="#FF7A45", glow_alpha=210,
@@ -49,17 +49,23 @@ def star_path(cx, cy, r_v, r_h, waist):
     return p
 
 
-def blur(img, factor=40):
-    """Desenfoque amplio: reduce en varios pasos y vuelve a ampliar suavemente."""
-    w, h = img.width(), img.height()
-    small = img
-    for k in (2, 4, 8, factor):
-        small = small.scaled(max(2, w // k), max(2, h // k), Qt.AspectRatioMode.IgnoreAspectRatio,
-                             Qt.TransformationMode.SmoothTransformation)
-    for k in (8, 4, 2, 1):
-        small = small.scaled(w // k, h // k, Qt.AspectRatioMode.IgnoreAspectRatio,
-                             Qt.TransformationMode.SmoothTransformation)
-    return small
+def draw_glow(p, shape, glow_color, alpha, radius, layers=64):
+    """Resplandor suave a resolución completa: muchos contornos del mismo trazo, cada vez más
+    anchos y casi transparentes. Sin reescalados, así no aparecen escalones ni píxeles."""
+    p.save()
+    p.setBrush(Qt.BrushStyle.NoBrush)
+    for i in range(layers, 0, -1):
+        t = i / layers
+        # Más capas cerca del borde: caída parecida a una gaussiana
+        width = 2 * radius * t ** 2.2
+        c = QColor(glow_color)
+        c.setAlphaF(alpha / layers)
+        pen = QPen(c, width)
+        pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        p.setPen(pen)
+        p.drawPath(shape)
+    p.restore()
 
 
 def render(w, h, dark):
@@ -77,16 +83,8 @@ def render(w, h, dark):
     cx, cy = w * 0.70, h * 0.62
     shape = star_path(cx, cy, h * 0.95, h * 0.70, h * 0.075)
 
-    # Resplandor difuminado detrás de la estrella
-    glow = QImage(w, h, QImage.Format.Format_ARGB32_Premultiplied)
-    glow.fill(Qt.GlobalColor.transparent)
-    g = QPainter(glow)
-    g.setRenderHint(QPainter.RenderHint.Antialiasing)
-    g.setPen(Qt.PenStyle.NoPen)
-    g.setBrush(color(pal["glow"], pal["glow_alpha"]))
-    g.drawPath(shape)
-    g.end()
-    p.drawImage(0, 0, blur(glow))
+    # Resplandor difuminado alrededor de la estrella (dibujado en el lienzo de 16 bits)
+    draw_glow(p, shape, pal["glow"], pal["glow_alpha"] / 255, h * 0.075)
 
     # Estrella rellena de luz
     grad = QLinearGradient(cx - h * 0.4, cy - h * 0.9, cx + h * 0.3, cy + h * 0.9)
