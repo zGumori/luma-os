@@ -39,6 +39,8 @@ OPTIONAL_APPS = [
 
 # Acentos de Luma Glass (docs/DESIGN.md)
 ACCENTS = ["#2F7BFF", "#14B8E6", "#8B5CF6", "#F0457A", "#F5A524", "#21C07A"]
+# Tema Kvantum de cada acento (build_files/tools/gen_kvantum.py)
+KVANTUM_THEMES = dict(zip(ACCENTS, ["Luma", "LumaCian", "LumaVioleta", "LumaRosa", "LumaAmbar", "LumaVerde"]))
 
 
 def run(cmd):
@@ -199,6 +201,15 @@ class Backend(QObject):
         theme = "__aurorae__svg__LumaDark" if dark else "__aurorae__svg__Luma"
         run(["kwriteconfig6", "--file", "kwinrc", "--group", "org.kde.kdecoration2", "--key", "theme", theme])
         run(["dbus-send", "--session", "--type=method_call", "--dest=org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure"])
+        # Cristal dentro de las ventanas: tema Kvantum del acento elegido, claro u oscuro
+        kvantum = KVANTUM_THEMES.get((accent or ACCENTS[0]).upper(), "Luma")
+        run(["kwriteconfig6", "--file", str(Path.home() / ".config/Kvantum/kvantum.kvconfig"),
+             "--group", "General", "--key", "theme", kvantum])
+        run(["kwriteconfig6", "--file", "kdeglobals", "--group", "KDE", "--key", "widgetStyle",
+             "kvantum-dark" if dark else "kvantum"])
+        # Aviso de cambio de estilo (KGlobalSettings::StyleChanged = 2) para las apps abiertas
+        run(["dbus-send", "--session", "--type=signal", "/KGlobalSettings", "org.kde.KGlobalSettings.notifyChange",
+             "int32:2", "int32:0"])
 
     # --- Otros -------------------------------------------------------------
 

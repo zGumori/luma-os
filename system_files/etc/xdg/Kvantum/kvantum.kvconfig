@@ -1,0 +1,4 @@
+# Tema Kvantum por defecto de Luma OS (cristal claro). La Bienvenida lo cambia por usuario
+# en ~/.config/Kvantum/kvantum.kvconfig al elegir el acento.
+[General]
+theme=Luma

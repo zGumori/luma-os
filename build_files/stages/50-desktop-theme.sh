@@ -18,6 +18,11 @@ kw kdeglobals --group KDE --key LookAndFeelPackage org.luma.desktop
 kw kdeglobals --group General --key ColorScheme LumaLight
 kw kdeglobals --group General --key AccentColor "47,123,255"
 kw plasmarc --group Theme --key name luma
+# Cristal claro dentro de las ventanas: estilo Kvantum «Luma» (tema elegido en
+# /etc/xdg/Kvantum/kvantum.kvconfig; «kvantum-dark» carga la variante oscura)
+kw kdeglobals --group KDE --key widgetStyle kvantum
+test -f /usr/share/Kvantum/Luma/Luma.kvconfig
+find /usr/lib64/qt6/plugins /usr/lib64/qt5/plugins -iname '*kvantum*' -print 2>/dev/null || true  # diagnóstico
 # Pantalla de carga al iniciar sesión: la de Luma (no la de Bazzite/Steam Deck)
 kw ksplashrc --group KSplash --key Engine KSplashQML
 kw ksplashrc --group KSplash --key Theme org.luma.desktop

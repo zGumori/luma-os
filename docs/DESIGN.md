@@ -39,7 +39,7 @@ Acentos seleccionables: azul `#2F7BFF`, cian `#14B8E6`, violeta `#8B5CF6`, rosa 
 - Borde de 1 px `line-dark` y una línea de luz de 1 px en el borde superior (`rgba(255,255,255,0.18)`).
 
 **Cristal claro** (ventanas, diálogos, tarjetas)
-- Fondo `paper` al 78 % de opacidad, con un desenfoque de 40 px. El color del fondo de pantalla tiñe la ventana, como en la referencia del reproductor.
+- Fondo `paper` al 74 % de opacidad (86 % en ventanas inactivas), con el desenfoque de KWin detrás. La barra de título usa el mismo cristal, así que ventana y título son una sola pieza. El color del fondo de pantalla tiñe la ventana, como en la referencia del reproductor.
 - **Bisel grueso:** 5 px de `line-light` por dentro y 1 px de `rgba(0,0,0,0.10)` por fuera.
 - Sombra: `0 24px 60px rgba(10,14,30,0.28)`.
 
@@ -134,7 +134,7 @@ Se generan en el build (`build_files/tools/render_wallpapers.py`) con grano fino
 |---|---|
 | Cristal oscuro de la barra | Tema de Plasma (SVG) traslúcido + desenfoque de KWin |
 | Barra Luma | Panel flotante de Plasma con plasmoides propios: lanzador, *Píldoras vivas* (MPRIS, temporizadores, grabación) y *Estado* agrupado |
-| Cristal claro en ventanas | Tema Kvantum traslúcido + efecto de desenfoque forzado (Better Blur) para apps de Luma |
+| Cristal claro en ventanas | Tema Kvantum «Luma» generado con `build_files/tools/gen_kvantum.py` (uno por acento, con variante oscura) + desenfoque de KWin; la decoración Aurorae lleva piezas `mask-` para desenfocar también el título |
 | Controles de ventana | Decoración de ventana propia (KDecoration) con botones en píldora |
 | Animaciones | Efectos de KWin en QML/JS: abrir/cerrar con escala y desenfoque |
 | Cursor | Tema Xcursor generado en el build con `build_files/tools/render_cursors.py` |

@@ -5,7 +5,9 @@ Uso: python gen_aurorae.py   (desde cualquier sitio)
 
 Crea dos temas: «Luma» (claro) y «LumaDark» (oscuro). Cada uno tiene:
 - decoration.svg: marco de 9 piezas con sombra, bisel y esquinas redondeadas
-  (variantes activa, inactiva y maximizada).
+  (variantes activa, inactiva y maximizada). El relleno es cristal traslúcido, igual
+  que el fondo de las ventanas del tema Kvantum (gen_kvantum.py), y las piezas
+  «mask-» le dicen a KWin dónde desenfocar lo que hay detrás.
 - minimize/maximize/restore/close.svg: segmentos de una misma píldora; con
   ButtonSpacing=0 se ven como un único control agrupado (docs/DESIGN.md).
 Solo formas, degradados y opacidad: KWin dibuja estos SVG con QtSvg.
@@ -26,14 +28,16 @@ BTN_W, BTN_H = 38, 30
 
 THEMES = {
     "Luma": dict(
-        title="Luma", fill="#F7F8FB", fill_inactive="#F1F2F6", line="#000000", line_alpha=0.13,
+        title="Luma", fill="#F7F8FB", fill_inactive="#F7F8FB", line="#000000", line_alpha=0.13,
+        fill_alpha=0.74, fill_alpha_inactive=0.86,
         highlight_alpha=0.9, shadow_alpha=0.24, shadow_inactive=0.12,
         text="20,22,28", text_inactive="140,145,160",
         pill="#FFFFFF", pill_line_alpha=0.10, hover="#ECEEF3", pressed="#E0E3EA",
         icon="#14161C", icon_inactive_alpha=0.45, close_hover="#FFE3E4", close_icon_hover="#E5323B",
     ),
     "LumaDark": dict(
-        title="Luma Oscuro", fill="#1B1F2A", fill_inactive="#171A23", line="#FFFFFF", line_alpha=0.10,
+        title="Luma Oscuro", fill="#1A1E28", fill_inactive="#1A1E28", line="#FFFFFF", line_alpha=0.10,
+        fill_alpha=0.78, fill_alpha_inactive=0.90,
         highlight_alpha=0.16, shadow_alpha=0.45, shadow_inactive=0.25,
         text="240,242,247", text_inactive="140,146,162",
         pill="#2A2F3D", pill_line_alpha=0.10, hover="#353B4C", pressed="#404759",
@@ -48,18 +52,26 @@ def shadow_corner(cx, cy, r, alpha, gid):
     """Degradado radial de sombra centrado en el centro del arco de la esquina."""
     stop = r / (r + PAD)
     return (f'<radialGradient id="{gid}" cx="{cx}" cy="{cy}" r="{r + PAD}" gradientUnits="userSpaceOnUse">'
-            f'<stop offset="0" stop-color="#0A0E1E" stop-opacity="{alpha}"/>'
-            f'<stop offset="{stop:.3f}" stop-color="#0A0E1E" stop-opacity="{alpha}"/>'
+            f'<stop offset="0" stop-color="#0A0E1E" stop-opacity="0"/>'
+            f'<stop offset="{stop - 0.001:.4f}" stop-color="#0A0E1E" stop-opacity="0"/>'
+            f'<stop offset="{stop:.4f}" stop-color="#0A0E1E" stop-opacity="{alpha}"/>'
             f'<stop offset="1" stop-color="#0A0E1E" stop-opacity="0"/></radialGradient>')
 
 
-def frame(prefix, t, active, maximized, oy):
-    """Devuelve (defs, piezas) de un marco completo colocado a partir de y=oy."""
+def frame(prefix, t, active, maximized, oy, mask=False):
+    """Devuelve (defs, piezas) de un marco completo colocado a partir de y=oy.
+
+    Con mask=True dibuja solo la silueta de la ventana en negro opaco (sin sombra ni
+    filos): es la zona que KWin desenfoca detrás de la decoración.
+    """
     defs, parts = [], []
     fill = t["fill"] if active else t["fill_inactive"]
+    fa = f'fill="{fill}" fill-opacity="{t["fill_alpha"] if active else t["fill_alpha_inactive"]}"'
     salpha = t["shadow_alpha"] if active else t["shadow_inactive"]
     line = f'fill="{t["line"]}" fill-opacity="{t["line_alpha"]}"'
     hl = f'fill="#FFFFFF" fill-opacity="{t["highlight_alpha"]}"'
+    if mask:
+        fa, line, hl = 'fill="#000000"', 'fill="none"', 'fill="none"'
 
     if maximized:
         # Sin sombra, sin bisel ni esquinas: un rectángulo plano
@@ -67,7 +79,7 @@ def frame(prefix, t, active, maximized, oy):
                                   "bottomleft", "bottom", "bottomright"]):
             x = (i % 3) * (EDGE + 2)
             y = oy + (i // 3) * (EDGE + 2)
-            parts.append(f'<rect id="{prefix}{name}" x="{x}" y="{y}" width="{EDGE}" height="{EDGE}" fill="{fill}"/>')
+            parts.append(f'<rect id="{prefix}{name}" x="{x}" y="{y}" width="{EDGE}" height="{EDGE}" {fa}/>')
         return defs, parts, 3 * (EDGE + 2)
 
     # Columnas y filas de ancho uniforme: Plasma estira cada esquina al tamaño de su borde,
@@ -86,23 +98,27 @@ def frame(prefix, t, active, maximized, oy):
 
     def lin(gid, x1, y1, x2, y2):
         """Sombra lineal: opaca en (x2,y2), transparente en (x1,y1)."""
+        if mask:
+            return "none"
         defs.append(f'<linearGradient id="{gid}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" gradientUnits="userSpaceOnUse">'
                     f'<stop offset="0" stop-color="#0A0E1E" stop-opacity="0"/>'
                     f'<stop offset="1" stop-color="#0A0E1E" stop-opacity="{salpha}"/></linearGradient>')
         return f"url(#{gid})"
 
     def rad(gid, cx, cy, r):
+        if mask:
+            return "none"
         defs.append(shadow_corner(cx, cy, r, salpha, gid))
         return f"url(#{gid})"
 
     # Esquinas superiores (radio grande)
     group("topleft", cols[0], rows[0], W, HT,
           f'<rect x="0" y="0" width="{W}" height="{HT}" fill="{rad(f"sh_{uid}_tl", W, HT, rt)}"/>'
-          f'<path d="M {PAD},{HT} A {rt},{rt} 0 0 1 {W},{PAD} L {W},{HT} Z" fill="{fill}"/>'
+          f'<path d="M {PAD},{HT} A {rt},{rt} 0 0 1 {W},{PAD} L {W},{HT} Z" {fa}/>'
           f'<path d="M {PAD},{HT} A {rt},{rt} 0 0 1 {W},{PAD} L {W},{PAD + 1} A {rt - 1},{rt - 1} 0 0 0 {PAD + 1},{HT} Z" {hl}/>')
     group("topright", cols[2], rows[0], W, HT,
           f'<rect x="0" y="0" width="{W}" height="{HT}" fill="{rad(f"sh_{uid}_tr", 0, HT, rt)}"/>'
-          f'<path d="M 0,{PAD} A {rt},{rt} 0 0 1 {rt},{HT} L 0,{HT} Z" fill="{fill}"/>'
+          f'<path d="M 0,{PAD} A {rt},{rt} 0 0 1 {rt},{HT} L 0,{HT} Z" {fa}/>'
           f'<path d="M 0,{PAD} A {rt},{rt} 0 0 1 {rt},{HT} L {rt - 1},{HT} A {rt - 1},{rt - 1} 0 0 0 0,{PAD + 1} Z" {hl}/>')
 
     # Esquinas inferiores (radio pequeño, dentro de una pieza tan ancha como la columna)
@@ -111,43 +127,45 @@ def frame(prefix, t, active, maximized, oy):
     group("bottomleft", cols[0], rows[2], W, HB,
           f'<rect x="0" y="0" width="{cxl}" height="{HB}" fill="{rad(f"sh_{uid}_bl", cxl, 0, rb)}"/>'
           f'<rect x="{cxl}" y="{rb}" width="{W - cxl}" height="{PAD}" fill="{lin(f"sh_{uid}_blv", 0, HB, 0, rb)}"/>'
-          f'<rect x="{cxl}" y="0" width="{W - cxl}" height="{rb}" fill="{fill}"/>'
-          f'<path d="M {PAD},0 A {rb},{rb} 0 0 0 {cxl},{rb} L {cxl},0 Z" fill="{fill}"/>'
+          f'<rect x="{cxl}" y="0" width="{W - cxl}" height="{rb}" {fa}/>'
+          f'<path d="M {PAD},0 A {rb},{rb} 0 0 0 {cxl},{rb} L {cxl},0 Z" {fa}/>'
           f'<path d="M {PAD},0 A {rb},{rb} 0 0 0 {cxl},{rb} L {cxl},{rb - 1} A {rb - 1},{rb - 1} 0 0 1 {PAD + 1},0 Z" {line}/>'
           f'<rect x="{cxl}" y="{rb - 1}" width="{W - cxl}" height="1" {line}/>')
     group("bottomright", cols[2], rows[2], W, HB,
           f'<rect x="{cxr}" y="0" width="{W - cxr}" height="{HB}" fill="{rad(f"sh_{uid}_br", cxr, 0, rb)}"/>'
           f'<rect x="0" y="{rb}" width="{cxr}" height="{PAD}" fill="{lin(f"sh_{uid}_brv", 0, HB, 0, rb)}"/>'
-          f'<rect x="0" y="0" width="{cxr}" height="{rb}" fill="{fill}"/>'
-          f'<path d="M {W - PAD},0 A {rb},{rb} 0 0 1 {cxr},{rb} L {cxr},0 Z" fill="{fill}"/>'
+          f'<rect x="0" y="0" width="{cxr}" height="{rb}" {fa}/>'
+          f'<path d="M {W - PAD},0 A {rb},{rb} 0 0 1 {cxr},{rb} L {cxr},0 Z" {fa}/>'
           f'<path d="M {W - PAD},0 A {rb},{rb} 0 0 1 {cxr},{rb} L {cxr},{rb - 1} A {rb - 1},{rb - 1} 0 0 0 {W - PAD - 1},0 Z" {line}/>'
           f'<rect x="0" y="{rb - 1}" width="{cxr}" height="1" {line}/>')
 
     # Bordes
     group("top", cols[1], rows[0], EDGE, HT,
           f'<rect x="0" y="0" width="{EDGE}" height="{PAD}" fill="{lin(f"sh_{uid}_t", 0, 0, 0, PAD)}"/>'
-          f'<rect x="0" y="{PAD}" width="{EDGE}" height="{rt}" fill="{fill}"/>'
+          f'<rect x="0" y="{PAD}" width="{EDGE}" height="{rt}" {fa}/>'
           f'<rect x="0" y="{PAD}" width="{EDGE}" height="1" {hl}/>')
     group("bottom", cols[1], rows[2], EDGE, HB,
-          f'<rect x="0" y="0" width="{EDGE}" height="{rb}" fill="{fill}"/>'
+          f'<rect x="0" y="0" width="{EDGE}" height="{rb}" {fa}/>'
           f'<rect x="0" y="{rb - 1}" width="{EDGE}" height="1" {line}/>'
           f'<rect x="0" y="{rb}" width="{EDGE}" height="{PAD}" fill="{lin(f"sh_{uid}_b", 0, HB, 0, rb)}"/>')
     group("left", cols[0], rows[1], W, EDGE,
           f'<rect x="0" y="0" width="{PAD}" height="{EDGE}" fill="{lin(f"sh_{uid}_l", 0, 0, PAD, 0)}"/>'
-          f'<rect x="{PAD}" y="0" width="{rt}" height="{EDGE}" fill="{fill}"/>'
+          f'<rect x="{PAD}" y="0" width="{rt}" height="{EDGE}" {fa}/>'
           f'<rect x="{PAD}" y="0" width="1" height="{EDGE}" {line}/>')
     group("right", cols[2], rows[1], W, EDGE,
-          f'<rect x="0" y="0" width="{rt}" height="{EDGE}" fill="{fill}"/>'
+          f'<rect x="0" y="0" width="{rt}" height="{EDGE}" {fa}/>'
           f'<rect x="{rt - 1}" y="0" width="1" height="{EDGE}" {line}/>'
           f'<rect x="{rt}" y="0" width="{PAD}" height="{EDGE}" fill="{lin(f"sh_{uid}_r", W, 0, rt, 0)}"/>')
-    group("center", cols[1], rows[1], EDGE, EDGE, f'<rect x="0" y="0" width="{EDGE}" height="{EDGE}" fill="{fill}"/>')
+    group("center", cols[1], rows[1], EDGE, EDGE, f'<rect x="0" y="0" width="{EDGE}" height="{EDGE}" {fa}/>')
     return defs, parts, rows[2] - oy + HB
 
 def decoration_svg(t):
     defs, parts, y = [], [], 0
-    for prefix, active, maximized in (("decoration-", True, False), ("decoration-inactive-", False, False),
-                                      ("decoration-maximized-", True, True), ("decoration-maximized-inactive-", False, True)):
-        d, p, h = frame(prefix, t, active, maximized, y)
+    for prefix, active, maximized, mask in (
+            ("decoration-", True, False, False), ("decoration-inactive-", False, False, False),
+            ("decoration-maximized-", True, True, False), ("decoration-maximized-inactive-", False, True, False),
+            ("mask-", True, False, True)):
+        d, p, h = frame(prefix, t, active, maximized, y, mask)
         defs += d
         parts += p
         y += h + 8

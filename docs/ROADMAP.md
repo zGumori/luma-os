@@ -42,7 +42,8 @@
 - [x] Píldoras vivas (plasmoide `org.luma.livepills`): música con carátula y «No molestar»
 - [ ] Más píldoras vivas: temporizador, descargas; estado agrupado (wifi/volumen/batería)
 - [x] Decoración de ventana Luma / Luma Oscuro (Aurorae) con controles agrupados en una píldora
-- [ ] Cristal claro en el contenido de las ventanas (Kvantum + desenfoque forzado)
+- [x] Cristal claro en el contenido de las ventanas: tema Kvantum «Luma» (claro y oscuro, uno por acento) y título traslúcido
+- [ ] Apps GTK/libadwaita a juego con el cristal de Luma
 - [ ] Instalador (Anaconda) con la marca de Luma en lugar de la de Fedora
 - [x] Arranque (Plymouth) con la marca de Luma (initramfs regenerado en el build)
 - [x] Inicio de sesión (SDDM) «luma»: reloj, avatar y contraseña en píldora de cristal
