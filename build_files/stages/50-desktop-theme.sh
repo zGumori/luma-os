@@ -35,3 +35,16 @@ kw kwinrc --group org.kde.kdecoration2 --key ButtonsOnRight IAX
 # Desenfoque de KWin activado (lo usan la barra y los menús de cristal)
 kw kwinrc --group Plugins --key blurEnabled true
 kw kwinrc --group Plugins --key contrastEnabled true
+kw kwinrc --group Effect-blur --key BlurStrength 12
+kw kwinrc --group Effect-blur --key NoiseStrength 4
+
+# Animaciones (docs/DESIGN.md → Movimiento)
+# Abrir/cerrar ventanas: efecto «Scale» de KWin, desde 0,92 al abrir y hasta 0,96 al cerrar
+kw kwinrc --group Plugins --key scaleEnabled true
+kw kwinrc --group Plugins --key fadeEnabled false
+kw kwinrc --group Effect-scale --key Duration 260
+kw kwinrc --group Effect-scale --key InScale 0.92
+kw kwinrc --group Effect-scale --key OutScale 0.96
+# Minimizar: «lámpara mágica», al estilo de macOS
+kw kwinrc --group Plugins --key magiclampEnabled true
+kw kwinrc --group Plugins --key squashEnabled false

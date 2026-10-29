@@ -45,7 +45,7 @@
 - [x] Inicio de sesión (SDDM) «luma»: reloj, avatar y contraseña en píldora de cristal
 - [ ] Pantalla de bloqueo de Plasma con el mismo diseño que el inicio de sesión
 - [x] Cursor «Luma Pointer» (flecha, mano, texto, espera y progreso animados)
-- [ ] Animaciones de KWin: abrir/cerrar ventanas con escala y desenfoque
+- [x] Animaciones de KWin: abrir/cerrar con escala (Scale), minimizar con lámpara mágica, desenfoque más intenso
 - [ ] Iconos y sonidos de Luma
 - [ ] Tema para apps GTK / libadwaita
 - [ ] Modo Foco: sin blur ni animaciones con juegos a pantalla completa

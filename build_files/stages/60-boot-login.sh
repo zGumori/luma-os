@@ -16,6 +16,13 @@ kwriteconfig6 --file /etc/xdg/kcminputrc --group Mouse --key cursorSize 32
 # El tema está en /usr/share/sddm/themes/luma y se activa en /etc/sddm.conf.d/99-luma.conf
 ls /etc/sddm.conf.d/ || true
 
+# ---------- Diagnóstico de la pantalla de bloqueo ----------
+# Plasma ha movido su pantalla de bloqueo entre versiones; esto deja en el log del build
+# qué versión hay y dónde están sus QML, para diseñar la de Luma sobre la estructura real.
+rpm -q plasma-workspace kscreenlocker plasma-desktop || true
+find /usr/share/plasma /usr/share/kscreenlocker /usr/lib64/qt6/qml/org/kde -ipath '*lock*' -name '*.qml' 2>/dev/null | head -60 || true
+find /usr/share/plasma/look-and-feel -maxdepth 3 -type d 2>/dev/null | head -40 || true
+
 # ---------- Arranque (Plymouth) ----------
 SPINNER=/usr/share/plymouth/themes/spinner
 python3 /ctx/tools/render_boot.py "${SPINNER}/watermark.png"
