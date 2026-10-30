@@ -7,7 +7,7 @@ Está inspirado en las referencias que dio el proyecto (cristal esmerilado, píl
 
 1. **Dos cristales, dos funciones.** El sistema (barra, bloqueo, avisos) usa *cristal oscuro*. Las ventanas y el contenido usan *cristal claro*. Así se sabe siempre qué es sistema y qué es app.
 2. **El color se gana.** La interfaz es neutra. El color aparece solo cuando algo está *vivo*: música sonando, un temporizador, una grabación, «No molestar». Aparece como un brillo que sube desde el borde inferior de una píldora.
-3. **Todo es redondo y flota.** No hay esquinas vivas ni barras pegadas al borde. Los controles se agrupan en píldoras.
+3. **Todo es redondo y flota.** No hay esquinas vivas. La única excepción es la Barra Luma, que ocupa el borde inferior de lado a lado. Los controles se agrupan en píldoras.
 4. **Movimiento con física.** Las cosas aparecen con escala y desenfoque, nunca de golpe, y rebotan muy poco.
 5. **Grande y legible.** La tipografía es generosa, los objetivos táctiles son amplios y el cursor es grande. Pensado para cualquier persona.
 
@@ -85,11 +85,11 @@ Acentos seleccionables: azul `#2F7BFF`, cian `#14B8E6`, violeta `#8B5CF6`, rosa 
 
 ## Componentes del sistema
 
-### Barra Luma (inferior, flotante)
-Una única barra de cristal oscuro flotando sobre el borde inferior:
-- **Izquierda:** botón con el logo de Luma (abre el lanzador), separador fino y apps ancladas o abiertas como iconos squircle a color, sin fondo.
-- **Centro:** *píldoras vivas* (lo que está pasando ahora): música con carátula, temporizador, grabación de pantalla, descargas. Solo aparecen cuando hay algo activo.
-- **Derecha:** píldora «No molestar» (roja cuando está activa) y una píldora con borde que agrupa wifi, volumen y batería. Después, fecha y hora en texto plano.
+### Barra Luma (inferior, de lado a lado)
+Una única barra de cristal oscuro pegada al borde inferior, de lado a lado:
+- **Izquierda:** botón con el logo de Luma (abre el lanzador).
+- **Centro:** apps ancladas o abiertas como iconos squircle a color, sin fondo, centradas respecto a la pantalla. Al pasar el ratón aparece una baldosa de cristal detrás del icono.
+- **Derecha:** *píldoras vivas* (lo que está pasando ahora): juego, grabación, música con carátula, temporizador, «No molestar» (roja cuando está activa). Solo aparecen cuando hay algo activo. Después, una píldora con borde que agrupa wifi, volumen y batería, y la fecha y hora en texto plano.
 
 ### Controles de ventana
 - Barra de título transparente, integrada en el cristal claro. El título va centrado en 17/600.
@@ -133,7 +133,7 @@ Se generan en el build (`build_files/tools/render_wallpapers.py`) con grano fino
 | Pieza | Implementación |
 |---|---|
 | Cristal oscuro de la barra | Tema de Plasma (SVG) traslúcido + desenfoque de KWin |
-| Barra Luma | Panel flotante de Plasma con plasmoides propios: lanzador, *Píldoras vivas* (MPRIS, temporizadores, grabación) y *Estado* agrupado |
+| Barra Luma | Panel de Plasma de lado a lado (no flotante) con plasmoides propios: lanzador, *Píldoras vivas* (MPRIS, temporizadores, grabación) y *Estado* agrupado |
 | Cristal claro en ventanas | Tema Kvantum «Luma» generado con `build_files/tools/gen_kvantum.py` (uno por acento, con variante oscura) + desenfoque de KWin; la decoración Aurorae lleva piezas `mask-` para desenfocar también el título |
 | Controles de ventana | Decoración de ventana propia (KDecoration) con botones en píldora |
 | Animaciones | Efectos de KWin en QML/JS: abrir/cerrar con escala y desenfoque |

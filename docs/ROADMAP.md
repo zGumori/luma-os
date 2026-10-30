@@ -38,7 +38,8 @@
 - [x] Fondos de pantalla propios (claro/oscuro), generados en el build
 - [x] Esquemas de color Luma Claro / Luma Oscuro
 - [x] Estilo de Plasma «Luma» (cristal oscuro: barra, menús, avisos)
-- [x] Tema global `org.luma.desktop` + Barra Luma flotante para usuarios nuevos (`ujust luma-apply-desktop` para los existentes)
+- [x] Tema global `org.luma.desktop` + Barra Luma para usuarios nuevos (`ujust luma-apply-desktop` para los existentes)
+- [x] Barra Luma de lado a lado, como la referencia: apps centradas y píldoras vivas a la derecha (los paneles sin tocar se convierten solos)
 - [x] Píldoras vivas (plasmoide `org.luma.livepills`): música con carátula y «No molestar»
 - [ ] Más píldoras vivas: temporizador, descargas; estado agrupado (wifi/volumen/batería)
 - [x] Decoración de ventana Luma / Luma Oscuro (Aurorae) con controles agrupados en una píldora

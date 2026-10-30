@@ -1,20 +1,24 @@
 // Disposición inicial de Luma OS: la Barra Luma (docs/DESIGN.md).
-// Lanzador con la estrella · apps ancladas · píldoras vivas · bandeja · reloj.
+// Barra de cristal oscuro de lado a lado, pegada al borde inferior:
+// lanzador con la estrella · apps centradas · píldoras vivas, bandeja y reloj a la derecha.
+// Si cambias el orden, actualiza también updates/luma-full-bar.js.
 
 var panel = new Panel;
 panel.location = "bottom";
 panel.height = 2 * Math.ceil(gridUnit * 2.6 / 2);
-panel.floating = true;
+panel.floating = false;
 panel.hiding = "none";
 
 var launcher = panel.addWidget("org.kde.plasma.kickoff");
 launcher.currentConfigGroup = ["General"];
 launcher.writeConfig("icon", "luma-logo-mark");
 
-panel.addWidget("org.kde.plasma.marginsseparator");
+// Dos espaciadores flexibles iguales: Plasma centra las apps respecto a la pantalla
+panel.addWidget("org.kde.plasma.panelspacer");
 
 var tasks = panel.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
+tasks.writeConfig("fill", false);
 tasks.writeConfig("launchers", [
     "applications:org.kde.dolphin.desktop",
     "applications:org.mozilla.firefox.desktop",
@@ -22,10 +26,10 @@ tasks.writeConfig("launchers", [
     "applications:org.kde.discover.desktop"
 ]);
 
-// Centro: píldoras vivas (música, «No molestar»…) entre dos espaciadores
 panel.addWidget("org.kde.plasma.panelspacer");
+
+// Derecha: píldoras vivas (música, juego, grabación, «No molestar»), bandeja y reloj
 panel.addWidget("org.luma.livepills");
-panel.addWidget("org.kde.plasma.panelspacer");
 panel.addWidget("org.kde.plasma.systemtray");
 
 var clock = panel.addWidget("org.kde.plasma.digitalclock");
